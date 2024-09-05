@@ -1,20 +1,41 @@
-import { error } from "console";
+import Book from "../models/bookSchema.js";
 
-export const getBooks = async (req, res) => {
+export const getBooks = async (req, res, next) => {
     try {
-        res.status(200).json({ message: 'Success' })
+        const books = await Book.find();
+
+        res.status(200).json({ books })
     } catch (error) {
         next(error);
     }
 }
 
-export const getSingleBook = async (req, res) => {
+export const getSingleBook = async (req, res, next) => {
     try {
-        res.status(200).json({ message: 'Success single post' })
+        const bookId = req.params.id;
+
+        // Check if the provided ID is valid
+        if (!bookId) {
+            const error = new Error('Book ID is required.');
+            error.statusCode = 400; // Bad Request
+            throw error;
+        }
+
+        // Fetch the book from the database by ID
+        const book = await Book.findById(bookId);
+
+        // Check if the book exists
+        if (!book) {
+            const error = new Error('Book not found.');
+            error.statusCode = 404; // Not Found
+            throw error;
+        }
+
+        res.status(200).json({ book });
     } catch (error) {
         next(error);
     }
-}
+};
 
 export const createBook = async (req, res, next) => {
     try {
@@ -32,7 +53,7 @@ export const createBook = async (req, res, next) => {
     }
 };
 
-export const updateBook = async (req, res) => {
+export const updateBook = async (req, res, next) => {
     try {
         res.status(200).json({ message: 'Success update book' })
     } catch (error) {
@@ -40,7 +61,7 @@ export const updateBook = async (req, res) => {
     }
 }
 
-export const deleteBook = async (req, res) => {
+export const deleteBook = async (req, res, next) => {
     try {
         res.status(200).json({ message: 'Success delete book' })
     } catch (error) {
