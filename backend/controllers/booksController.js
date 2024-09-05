@@ -1,10 +1,10 @@
+import { error } from "console";
 
 export const getBooks = async (req, res) => {
     try {
         res.status(200).json({ message: 'Success' })
     } catch (error) {
-        console.log('error:', error);
-        res.status(200).json({ error: error.message })
+        next(error);
     }
 }
 
@@ -12,26 +12,31 @@ export const getSingleBook = async (req, res) => {
     try {
         res.status(200).json({ message: 'Success single post' })
     } catch (error) {
-        console.log('error:', error);
-        res.status(200).json({ error: error.message })
+        next(error);
     }
 }
 
-export const createBook = async (req, res) => {
+export const createBook = async (req, res, next) => {
     try {
-        res.status(200).json({ message: 'Success create book' })
+        if (!req.body.name) {
+            console.log('No body provided');
+            // Throw an error with a message
+            res.status(400)
+            throw new Error('Please provide a name for the book');
+        }
+
+
+        res.status(200).json({ name });
     } catch (error) {
-        console.log('error:', error);
-        res.status(200).json({ error: error.message })
+        next(error);
     }
-}
+};
 
 export const updateBook = async (req, res) => {
     try {
         res.status(200).json({ message: 'Success update book' })
     } catch (error) {
-        console.log('error:', error);
-        res.status(200).json({ error: error.message })
+        next(error);
     }
 }
 
@@ -39,7 +44,6 @@ export const deleteBook = async (req, res) => {
     try {
         res.status(200).json({ message: 'Success delete book' })
     } catch (error) {
-        console.log('error:', error);
-        res.status(200).json({ error: error.message })
+        next(error)
     }
 }
