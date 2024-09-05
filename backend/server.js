@@ -1,5 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import connectDB from './config/connectDB.js';
 import errorHandler from './middlewares/errorMiddleware.js'; // Import error handler
 import booksRouter from './routes/booksRouter.js';
 
@@ -7,6 +8,9 @@ dotenv.config();
 
 const port = process.env.PORT || 5000;
 const app = express();
+
+// Connecting to MongoDB
+connectDB()
 
 // Middleware to parse incoming JSON requests
 app.use(express.json());
