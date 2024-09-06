@@ -81,7 +81,43 @@ export const createBook = async (req, res, next) => {
 
 export const updateBook = async (req, res, next) => {
     try {
-        res.status(200).json({ message: 'Success update book' })
+        const bookId = req.params.id;
+        const userId = req.user.id;
+
+        // Find the book by ID
+        const book = await Book.findById(bookId);
+
+        if (!book) {
+            return next(createError('Book not found', 404)); // Book not found
+        }
+        
+        // Check if the user is the author of the book
+        if (book.author.toString() !== userId) { // Converted ObjectId to string 
+            return next(createError('You do not have permission. Only author can update the book', 403)); // Forbidden
+        }
+
+        // Validate input data for updates
+        const { title } = req.body;
+        if (!title) {
+            return next(createError('Title is required', 400)); // Bad Request
+        }
+
+        // Update the book with new data
+        const updatedBook = await Book.findByIdAndUpdate(
+            bookId,
+            { title: title.trim() }, // Only update provided fields
+            { new: true, runValidators: true } // Return updated document and run schema validators
+        );
+
+        res.status(200).json({ 
+            message: 'Book updated successfully', 
+            book: { 
+                id: updatedBook._id, 
+                title: updatedBook.title, 
+                author: updatedBook.author, 
+                updatedAt: updatedBook.updatedAt 
+            } 
+        });
     } catch (error) {
         next(error);
     }
@@ -89,7 +125,28 @@ export const updateBook = async (req, res, next) => {
 
 export const deleteBook = async (req, res, next) => {
     try {
-        res.status(200).json({ message: 'Success delete book' })
+        const bookId = req.params.id;
+        const userId = req.user.id;
+
+        // Find the book by ID
+        const book = await Book.findById(bookId);
+
+        if (!book) {
+            return next(createError('Book not found', 404)); // Book not found
+        }
+        
+        // Check if the user is the author of the book
+        if (book.author.toString() !== userId) { // Converted ObjectId to string 
+            return next(createError('You do not have permission. Only author can delete the book', 403)); // Forbidden
+        }
+
+        // Delete the book
+        await Book.findByIdAndDelete(bookId);
+
+        res.status(200).json({ 
+            message: 'Book deleted successfully', 
+            bookId: bookId 
+        });
     } catch (error) {
         next(error)
     }
