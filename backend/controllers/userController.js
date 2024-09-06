@@ -1,13 +1,14 @@
 import User from "../models/userSchema.js";
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import createError from "../utils/error.js";
 
 // Utility function to handle errors
-const createError = (message, statusCode) => {
-    const error = new Error(message);
-    error.statusCode = statusCode;
-    return error;
-};
+// const createError = (message, statusCode) => {
+//     const error = new Error(message);
+//     error.statusCode = statusCode;
+//     return error;
+// };
 
 export const userCreate = async (req, res, next) => {
     try {

@@ -14,10 +14,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please add password'],
     },
-    role: {
+    roles: {
         type: [String],
         enum: ['author', 'borrower'],
-        default: ['borrower']
+        default: []
     },
     booksWritten: [ 
         {

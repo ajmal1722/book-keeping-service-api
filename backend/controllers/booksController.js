@@ -1,4 +1,6 @@
 import Book from "../models/bookSchema.js";
+import User from "../models/userSchema.js";
+import createError from "../utils/error.js";
 
 export const getBooks = async (req, res, next) => {
     try {
@@ -16,9 +18,7 @@ export const getSingleBook = async (req, res, next) => {
 
         // Check if the provided ID is valid
         if (!bookId) {
-            const error = new Error('Book ID is required.');
-            error.statusCode = 400; // Bad Request
-            throw error;
+            return next(createError('Book ID is required', 400));
         }
 
         // Fetch the book from the database by ID
@@ -26,9 +26,7 @@ export const getSingleBook = async (req, res, next) => {
 
         // Check if the book exists
         if (!book) {
-            const error = new Error('Book not found.');
-            error.statusCode = 404; // Not Found
-            throw error;
+            return next(createError('Book not found', 404)); // Not Found
         }
 
         res.status(200).json({ book });
@@ -39,15 +37,43 @@ export const getSingleBook = async (req, res, next) => {
 
 export const createBook = async (req, res, next) => {
     try {
-        if (!req.body.name) {
-            console.log('No body provided');
-            // Throw an error with a message
-            res.status(400)
-            throw new Error('Please provide a name for the book');
+        const authorId = req.user.id;
+        const { title } = req.body;
+        
+        if (!title) {
+            return next(createError('Title is required', 400));
         }
 
+        // Check if the author exists
+        const author = await User.findById(authorId);
+        if (!author) {
+            return next(createError('Author not found', 404)); // Not Found
+        }
 
-        res.status(200).json({ name });
+        // Check and add "author" role if not already present
+        if (!author.roles.includes('author')) {
+            author.roles.push('author');
+            await author.save(); // Save the user with updated roles
+        }
+
+        // Create a new book
+        const newBook = new Book({
+            title: title.trim(), // Trim whitespace
+            author: author._id, // Reference to the author's ID
+        });
+
+        // Save the new book to the database
+        await newBook.save();
+
+        res.status(201).json({ 
+            message: 'Book created successfully', 
+            book: { 
+                id: newBook._id, 
+                title: newBook.title, 
+                author: author.name, 
+                createdAt: newBook.createdAt 
+            } 
+        });
     } catch (error) {
         next(error);
     }

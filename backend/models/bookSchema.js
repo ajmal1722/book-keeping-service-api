@@ -1,20 +1,20 @@
 import mongoose from "mongoose";
 
 const bookSchema = new mongoose.Schema({
-  bookName: {
+  title: {
     type: String,
-    required: [true, "Please add Book name"],
+    required: [true, "Please add title for the book"],
   },
   author: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: [true, "Please add author name"],
+    required: true,
   },
-  library: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Library",
-    required: [true, "Library name is required"],
-  },
+  // library: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: "Library",
+  //   required: [true, "Library name is required"],
+  // },
   borrower: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -22,7 +22,7 @@ const bookSchema = new mongoose.Schema({
   },
   imageUrl: {
     type: String,
-    required: true,
+    // required: true,
   },
   isAvailable: {
     type: Boolean,
