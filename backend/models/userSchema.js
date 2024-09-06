@@ -15,10 +15,16 @@ const userSchema = new mongoose.Schema({
         required: [true, 'Please add password'],
     },
     role: {
-      type: String,
-      enum: ['author', 'borrower', 'admin'],
-      required: [true, 'Role is required'],
+        type: [String],
+        enum: ['author', 'borrower'],
+        default: ['borrower']
     },
+    booksWritten: [ 
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Book',
+        },
+    ],
     borrowedBooks: [
         {
             type: mongoose.Schema.Types.ObjectId,

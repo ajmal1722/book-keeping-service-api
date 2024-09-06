@@ -1,8 +1,9 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import connectDB from './config/connectDB.js';
-import errorHandler from './middlewares/errorMiddleware.js'; // Import error handler
+import errorHandler from './middlewares/errorMiddleware.js'; 
 import booksRouter from './routes/booksRouter.js';
+import userRouter from './routes/userRouter.js'; 
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // Routes
+app.use('/api/users', userRouter);
 app.use('/api/books', booksRouter);
 
 app.get('/', (req, res) => {
