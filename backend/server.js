@@ -1,5 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
 import connectDB from './config/connectDB.js';
 import errorHandler from './middlewares/errorMiddleware.js'; 
 import booksRouter from './routes/booksRouter.js';
@@ -17,6 +18,7 @@ connectDB()
 app.use(express.json());
 // Middleware to parse URL-encoded data
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser()); // Parse cookies
 
 // Routes
 app.use('/api/users', userRouter);
