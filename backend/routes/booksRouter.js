@@ -1,5 +1,6 @@
 import express from 'express';
 const router = express();
+import verifyAccessToken from '../middlewares/authMiddleware.js';
 import {
     getBooks,
     getSingleBook,
@@ -7,6 +8,9 @@ import {
     updateBook,
     deleteBook
 } from '../controllers/booksController.js';
+
+// Middleware for authorization
+router.use(verifyAccessToken);
 
 router.get('/', getBooks);
 
