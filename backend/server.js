@@ -5,6 +5,7 @@ import connectDB from './config/connectDB.js';
 import errorHandler from './middlewares/errorMiddleware.js'; 
 import booksRouter from './routes/booksRouter.js';
 import userRouter from './routes/userRouter.js'; 
+import borrowRouter from './routes/borrowingRouter.js';
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.use(cookieParser()); // Parse cookies
 // Routes
 app.use('/api/users', userRouter);
 app.use('/api/books', booksRouter);
+app.use('/api', borrowRouter);
 
 app.get('/', (req, res) => {
     res.send('Server is running');
