@@ -241,8 +241,46 @@ export const addBookToInventory = async (req, res, next) => {
 
 export const removeBookFromInventory = async (req, res, next) => {
     try {
+        const libraryId = req.params.id;
+        const bookId = req.params.bookId;
+        const userId = req.user.id;
+
+        // Validate input
+        if (!libraryId || !bookId) {
+            return next(createError('Library ID and Book ID are required', 400)); // Bad Request
+        }
+
+        // Check if the library exists
+        const library = await Library.findById(libraryId);
+        if (!library) {
+            return next(createError('Library not found', 404)); // Not Found
+        }
+
+        // Fetch the user to verify roles and ownership
+        const user = await User.findById(userId);
+        if (!user) {
+            return next(createError('User not found', 404)); // Not Found
+        }
         
-        res.json('comming Soon..');
+        // Check if the user has the 'library' role and owns the library
+        if (!user.roles.includes('library') || !user.librariesOwned.includes(libraryId)) {
+            return next(createError('You do not have access to remove books from this library', 403)); // Forbidden
+        }
+
+        // Check if the book is in the library's inventory
+        const bookIndex = library.inventory.indexOf(bookId);
+        if (bookIndex === -1) {
+            return next(createError('Book not found in the inventory', 404)); // Not Found
+        }
+
+        // Remove the book from the library's inventory
+        library.inventory.splice(bookIndex, 1); // Remove the book from the inventory array
+        await library.save();
+
+        res.status(200).json({
+            message: 'Book removed from inventory successfully',
+            inventory: library.inventory,
+        });
     } catch (error) {
         next(error);
     }
