@@ -77,8 +77,46 @@ export const createLibrary = async (req, res, next) => {
 export const updateLibrary = async (req, res, next) => {
     try {
         const libraryId = req.params.id;
+        const userId = req.user.id;
+        const { name } = req.body;
 
+        // Validate input
+        if (!libraryId) {
+            return next(createError('Library ID is required', 400)); // Bad Request
+        }
 
+        // check if the library exists
+        const library = await Library.findById(libraryId);
+        if (!library) {
+            return next(createError('Library not found', 404));
+        }
+        
+        // Fetch the user to verify roles
+        const user = await User.findById(userId);
+        if (!user) {
+            return next(createError('User not found', 404)); // User not found
+        }
+
+        // Check if the user has the 'library' role and owns the library
+        if (!user.roles.includes('library') || !user.librariesOwned.includes(libraryId)) {
+            return next(createError('You do not have access to delete this library', 403)); // Forbidden
+        }
+
+        // Update the library
+        if (name) {
+            library.name = name.trim(); // Trim whitespace
+        }
+
+        const updatedLibrary = await library.save();
+
+        // Respond with success message
+        res.status(200).json({ 
+            message: 'Library updated successfully', 
+            library: { 
+                id: updatedLibrary._id, 
+                name: updatedLibrary.name 
+            } 
+        });
     } catch (error) {
         next(error);
     }
@@ -92,6 +130,12 @@ export const deleteLibrary = async (req, res, next) => {
         // Validate input
         if (!libraryId) {
             return next(createError('Library ID is required', 400)); // Bad Request
+        }
+
+        // check if the library exists
+        const library = await Library.findById(libraryId);
+        if (!library) {
+            return next(createError('Library not found', 404));
         }
         
         // Fetch the user to verify roles
