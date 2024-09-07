@@ -2,6 +2,7 @@ import Library from "../models/librarySchema.js";
 import User from "../models/userSchema.js";
 import Book from "../models/bookSchema.js";
 import createError from "../utils/error.js";
+import mongoose from "mongoose";
 
 export const getLibraries = async (req, res, next) => {
     try {
@@ -176,12 +177,68 @@ export const deleteLibrary = async (req, res, next) => {
 // Library Inventory
 
 
-export const getBooksFromLibrary = async (req, res, next) => {
+export const getLibraryInventory = async (req, res, next) => {
     try {
-        const bookId = req.params.id;
-        const userId = req.user.id;
+        const libraryId = req.params.id;
 
-        res.json('comming Soon..');
+        // Validate input
+        if (!libraryId) {
+            return next(createError('Library ID is required', 400)); // Bad Request
+        }
+
+        const libraryInventory = await Library.aggregate([
+            {
+                $match: {
+                  _id: new mongoose.Types.ObjectId('66dc02dcdb7f5c3bc8ca6263')
+                }
+            },
+            {
+                $unwind: {
+                    path: '$inventory',
+                }
+            },
+            {
+                $lookup: {
+                    from: 'books',
+                    localField: 'inventory',
+                    foreignField: '_id',
+                    as: 'book_details'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$book_details',
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        _id: '$_id',
+                        name: '$name',
+                        createdAt: '$createdAt'
+                    },
+                    books: { $push: '$book_details' }
+                }
+            },
+            {
+                $project: {
+                    _id: '$_id._id',
+                    name: '$_id.name',
+                    createdAt: '$_id.createdAt',
+                    inventory: '$books'
+                }
+            }
+        ]);
+
+        if (!libraryInventory.length) {
+            return next(createError('Library not found or inventory is empty', 404)); // Not Found
+        }
+
+        // Respond with the library inventory
+        res.status(200).json({
+            message: 'Library inventory retrieved successfully',
+            library: libraryInventory[0]
+        });
     } catch (error) {
         next(error);
     }

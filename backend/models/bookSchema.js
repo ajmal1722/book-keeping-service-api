@@ -14,15 +14,6 @@ const bookSchema = new mongoose.Schema({
     type: String,
     // required: true,
   },
-  // library: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: "Library",
-  //   required: [true, "Library name is required"],
-  // },
-  isBorrowed: {
-    type: Boolean,
-    default: false,
-  },
   borrower: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

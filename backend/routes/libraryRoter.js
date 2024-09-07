@@ -7,7 +7,7 @@ import {
     createLibrary,
     updateLibrary,
     deleteLibrary,
-    getBooksFromLibrary,
+    getLibraryInventory,
     addBookToInventory,
     removeBookFromInventory
 } from '../controllers/libraryController.js';
@@ -29,7 +29,7 @@ router.delete('/:id', deleteLibrary);
 // Library Inventory
 
 
-router.get('/:id/inventory', getBooksFromLibrary);
+router.get('/:id/inventory', getLibraryInventory);
 
 router.post('/:id/inventory', addBookToInventory);
 
