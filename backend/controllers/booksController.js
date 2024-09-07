@@ -40,7 +40,7 @@ export const createBook = async (req, res, next) => {
         const authorId = req.user.id;
         const { title } = req.body;
         
-        if (!title) {
+        if (!title.trim()) {
             return next(createError('Title is required', 400));
         }
 
@@ -48,12 +48,6 @@ export const createBook = async (req, res, next) => {
         const author = await User.findById(authorId);
         if (!author) {
             return next(createError('Author not found', 404)); // Not Found
-        }
-
-        // Check and add "author" role if not already present
-        if (!author.roles.includes('author')) {
-            author.roles.push('author');
-            await author.save(); // Save the user with updated roles
         }
 
         // Create a new book
@@ -64,6 +58,18 @@ export const createBook = async (req, res, next) => {
 
         // Save the new book to the database
         await newBook.save();
+
+        // Check and add "author" role if not already present
+        if (!author.roles.includes('author')) {
+            author.roles.push('author');
+            await author.save(); // Save the user with updated roles
+        }
+
+        // Update the author's booksWritten list
+        if (!author.booksWritten.includes(newBook._id)) {
+            author.booksWritten.push(newBook._id);
+            await author.save(); // Save the updated author
+        }
 
         res.status(201).json({ 
             message: 'Book created successfully', 
@@ -130,9 +136,14 @@ export const deleteBook = async (req, res, next) => {
 
         // Find the book by ID
         const book = await Book.findById(bookId);
-
         if (!book) {
             return next(createError('Book not found', 404)); // Book not found
+        }
+
+        // Find the author by ID
+        const author = await User.findById(book.author);
+        if (!author) {
+            return next(createError('Author not found', 404)); // Not Found
         }
         
         // Check if the user is the author of the book
@@ -141,7 +152,14 @@ export const deleteBook = async (req, res, next) => {
         }
 
         // Delete the book
-        await Book.findByIdAndDelete(bookId);
+        const deletedBook = await Book.findByIdAndDelete(bookId);
+        if (!deletedBook) {
+            return next(createError('Failed to delete the book', 500)); // Internal Server Error
+        }
+
+        // Remove the book from the author's booksWritten list
+        author.booksWritten = author.booksWritten.filter(bookId => !bookId.equals(book._id));
+        await author.save();
 
         res.status(200).json({ 
             message: 'Book deleted successfully', 
