@@ -44,6 +44,12 @@ export const createBook = async (req, res, next) => {
             return next(createError('Title is required', 400));
         }
 
+        // Check if the title exists
+        const existingBook = await Book.findOne({ title });
+        if (existingBook) {
+            return next(createError('Book with same title is already exists', 409))
+        }
+
         // Check if the author exists
         const author = await User.findById(authorId);
         if (!author) {
