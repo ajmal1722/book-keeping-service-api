@@ -88,12 +88,24 @@ export const updateLibrary = async (req, res, next) => {
 export const deleteLibrary = async (req, res, next) => {
     try {
         const libraryId = req.params.id;
+        const userId = req.user.id;
 
         // Validate input
         if (!libraryId) {
             return next(createError('Library ID is required', 400)); // Bad Request
         }
         
+        // Fetch the user to verify roles
+        const user = await User.findById(userId);
+        if (!user) {
+            return next(createError('User not found', 404)); // User not found
+        }
+
+        // Check if the user has the 'library' role and owns the library
+        if (!user.roles.includes('library') || !user.librariesOwned.includes(libraryId)) {
+            return next(createError('You do not have access to delete this library', 403)); // Forbidden
+        }
+
         // Find and delete the Library
         const deletedLibrary = await Library.findByIdAndDelete(libraryId);
 
@@ -101,6 +113,10 @@ export const deleteLibrary = async (req, res, next) => {
         if (!deletedLibrary) {
             return next(createError('Library not found', 404)); // Not Found
         }
+
+        // Remove the library from the user's librariesOwned list
+        user.librariesOwned = user.librariesOwned.filter(id => id.toString() !== libraryId);
+        await user.save();
 
         // Respond with success message
         res.status(200).json({ 
