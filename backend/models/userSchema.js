@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
     },
     roles: {
         type: [String],
-        enum: ['author', 'borrower'],
+        enum: ['author', 'borrower', 'library'],
         default: []
     },
     booksWritten: [ 
@@ -29,6 +29,12 @@ const userSchema = new mongoose.Schema({
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Book',
+        },
+    ],
+    librariesOwned: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Library',
         },
     ],
     refreshToken: {
