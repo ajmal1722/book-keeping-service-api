@@ -5,7 +5,7 @@ const librarySchema = new mongoose.Schema({
         type: String,
         required: [true, 'Name is required'],
     },
-    books: [
+    inventory: [
         {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Book", // Reference to the Book schema

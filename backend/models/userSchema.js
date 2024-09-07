@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
         enum: ['author', 'borrower', 'library'],
         default: []
     },
-    booksWritten: [ 
+    booksWritten: [
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Book',

@@ -1,5 +1,6 @@
 import Library from "../models/librarySchema.js";
 import User from "../models/userSchema.js";
+import Book from "../models/bookSchema.js";
 import createError from "../utils/error.js";
 
 export const getLibraries = async (req, res, next) => {
@@ -20,7 +21,7 @@ export const getLibraries = async (req, res, next) => {
 
 export const getSingleLibrary = async (req, res, next) => {
     try {
-        
+        res.json('comming Soon..');
     } catch (error) {
         next(error);
     }
@@ -170,3 +171,79 @@ export const deleteLibrary = async (req, res, next) => {
         next(error); 
     }
 };
+
+
+// Library Inventory
+
+
+export const getBooksFromLibrary = async (req, res, next) => {
+    try {
+        const bookId = req.params.id;
+        const userId = req.user.id;
+
+        res.json('comming Soon..');
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const addBookToInventory = async (req, res, next) => {
+    try {
+        const libraryId = req.params.id;
+        const { bookId } = req.body;
+        const userId = req.user.id;
+
+        // Validate input
+        if (!bookId) {
+            return next(createError('Book ID is required', 400)); // Bad Request
+        }
+
+        // Check if the library exists
+        const library = await Library.findById(libraryId);
+        if (!library) {
+            return next(createError('Library not found', 404)); // Not Found
+        }
+
+        // Fetch the user to verify roles and ownership
+        const user = await User.findById(userId);
+        if (!user) {
+            return next(createError('User not found', 404)); // Not Found
+        }
+
+        // Check if the user has the 'library' role and owns the library
+        if (!user.roles.includes('library') || !user.librariesOwned.includes(libraryId)) {
+            return next(createError('You do not have access to add books to this library', 403)); // Forbidden
+        }
+
+        // Check if the book exists
+        const book = await Book.findById(bookId);
+        if (!book) {
+            return next(createError('Book not found', 404)); // Not Found
+        }
+
+        // Check if the book is already in the inventory
+        if (library.inventory.includes(bookId)) {
+            return next(createError('Book already exists in the inventory', 409)); // Conflict
+        }
+        
+        // Add the book to the library's inventory
+        library.inventory.push(bookId);
+        await library.save();
+
+        res.status(200).json({
+            message: 'Book added to inventory successfully',
+            inventory: library.inventory,
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const removeBookFromInventory = async (req, res, next) => {
+    try {
+        
+        res.json('comming Soon..');
+    } catch (error) {
+        next(error);
+    }
+}
