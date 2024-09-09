@@ -1,26 +1,32 @@
 import User from "../models/userSchema.js";
 import Book from "../models/bookSchema.js";
+import Library from "../models/librarySchema.js";
 import createError from "../utils/error.js";
 
 export const borrowBook = async (req, res, next) => {
     try {
-        const { bookId } = req.body;
+        const { libraryId, bookId } = req.body; 
         const userId = req.user.id; // Assuming the user is authenticated and user ID is available
 
-        // Validate book ID
-        if (!bookId) {
-            return next(createError('Book ID is required', 400));
+        // Validate input
+        if (!libraryId || !bookId) {
+            return next(createError('Library ID and Book ID are required', 400));
         }
 
-        // Find the book by ID
-        const book = await Book.findById(bookId);
+        // Find the library by ID
+        const library = await Library.findById(libraryId);
+        if (!library) {
+            return next(createError('Library not found', 404)); // Library not found
+        }
 
-        if (!book) {
-            return next(createError('Book not found', 404)); // Book not found
+        // Find the inventory item in the library for the given book
+        const inventoryItem = library.inventory.find(item => item.bookId.equals(bookId));
+        if (!inventoryItem) {
+            return next(createError('Book not found in this library inventory', 404)); // Book not found in inventory
         }
 
         // Check if the book is already borrowed
-        if (book.isAvailable === false) {
+        if (!inventoryItem.isAvailable) {
             return next(createError('Book is already borrowed', 400)); // Bad Request
         }
 
@@ -36,29 +42,29 @@ export const borrowBook = async (req, res, next) => {
             await user.save();
         }
 
-        // Update book status to borrowed
-        book.isAvailable = false;
-        book.borrower = userId;
-        book.borrowedAt = new Date();
+        // Update inventory status to borrowed
+        inventoryItem.isAvailable = false;
+        inventoryItem.borrower = userId;
+        inventoryItem.borrowedAt = new Date();
 
-        // Handle charges
-        const charge = book.charge || 0;
+        // Save the updated library to the database
+        await library.save();
 
-        // Save the updated book to the database
-        await book.save();
-
-        // Optionally update the user's borrowed books list
+        // update the user's borrowed books list
         await User.findByIdAndUpdate(userId, {
-            $addToSet: { borrowedBooks: book._id }
+            $addToSet: { borrowedBooks: bookId }
         });
 
         res.status(200).json({
             message: 'Book borrowed successfully',
             book: {
-                id: book._id,
-                title: book.title,
-                borrower: userId,
-                charge: charge,
+                id: bookId,
+                borrower: {
+                    id: userId,
+                    name: user.name,
+                    email: user.email
+                },
+                charge: inventoryItem.charge,
             },
         });
     } catch (error) {
