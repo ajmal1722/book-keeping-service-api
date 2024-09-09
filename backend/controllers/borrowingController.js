@@ -71,3 +71,61 @@ export const borrowBook = async (req, res, next) => {
         next(error);
     }
 };
+
+export const returnBook = async (req, res, next) => {
+    try {
+        const { libraryId } = req.body; // Assume the request includes the library ID
+        const bookId = req.params.id; // Book ID to be returned
+        const userId = req.user.id; // Assuming the user is authenticated and user ID is available
+
+        // Validate input
+        if (!libraryId || !bookId) {
+            return next(createError('Library ID and Book ID are required', 400));
+        }
+
+        // Find the library by ID
+        const library = await Library.findById(libraryId);
+        if (!library) {
+            return next(createError('Library not found', 404)); // Library not found
+        }
+
+        // Find the inventory item in the library for the given book
+        const inventoryItem = library.inventory.find(item => item.bookId.equals(bookId));
+        if (!inventoryItem) {
+            return next(createError('Book not found in this library inventory', 404)); // Book not found in inventory
+        }
+
+        // Check if the book is already available
+        if (inventoryItem.isAvailable) {
+            return next(createError('Book is not borrowed', 400)); // Bad Request
+        }
+
+        // Check if the user returning the book is the one who borrowed it
+        if (!inventoryItem.borrower.equals(userId)) {
+            return next(createError('You cannot return a book that you did not borrow', 403)); // Forbidden
+        }
+
+        // Update inventory status to available
+        inventoryItem.isAvailable = true;
+        inventoryItem.borrower = null;
+        inventoryItem.borrowedAt = null;
+
+        // Save the updated library to the database
+        await library.save();
+
+        // Remove the book from the user's borrowed books list
+        await User.findByIdAndUpdate(userId, {
+            $pull: { borrowedBooks: bookId }
+        });
+
+        res.status(200).json({
+            message: 'Book returned successfully',
+            book: {
+                id: bookId,
+                libraryId: library._id,
+            },
+        });
+    } catch (error) {
+        next(error);
+    }
+};
