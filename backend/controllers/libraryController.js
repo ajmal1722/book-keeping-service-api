@@ -22,7 +22,82 @@ export const getLibraries = async (req, res, next) => {
 
 export const getSingleLibrary = async (req, res, next) => {
     try {
-        res.json('comming Soon..');
+        const libraryId = req.params.id;
+
+        // Validate input
+        if (!libraryId) {
+            return next(createError('Library ID is required', 400)); // Bad Request
+        }
+
+        const libraryDetails = await Library.aggregate([
+            {
+                $match: {
+                    _id: new mongoose.Types.ObjectId(libraryId)
+                }
+            },
+            {
+                $unwind: {
+                    path: '$inventory',
+                }
+            },
+            {
+                $lookup: {
+                    from: 'books',
+                    localField: 'inventory',
+                    foreignField: '_id',
+                    as: 'book_details'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$book_details',
+                }
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'book_details.borrower',
+                    foreignField: '_id',
+                    as: 'borrower_details'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$borrower_details'
+                }
+            },
+            {
+                $group: {
+                    _id: { _id: '$_id', name: '$name', createdAt: '$createdAt' }, // Group by library fields
+                    books: {
+                        $push: {
+                            _id: '$book_details._id',
+                            title: '$book_details.title',
+                            author: '$book_details.author',
+                            isBorrowed: '$book_details.isBorrowed',
+                            borrower: {
+                                _id: '$borrower_details._id',
+                                name: '$borrower_details.name',
+                                email: '$borrower_details.email'
+                            },
+                            isAvailable: '$book_details.isAvailable',
+                            charge: '$book_details.charge',
+                            borrowedAt: '$book_details.borrowedAt'
+                        }
+                    }
+                }
+            },
+        ])
+        
+        if (!libraryDetails.length) {
+            return next(createError('Library not found', 404)); // Not Found
+        }
+
+        // Respond with the library details
+        res.status(200).json({
+            message: 'Library details retrieved successfully',
+            library: libraryDetails
+        });
     } catch (error) {
         next(error);
     }
