@@ -14,22 +14,10 @@ const bookSchema = new mongoose.Schema({
     type: String,
     // required: true,
   },
-  borrower: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    default: null,
-  },
-  borrowedAt: {
-      type: Date,
-  },
-  isAvailable: {
-    type: Boolean,
-    default: true,
-  },
-  charge: {
-    type: Number,
-    default: 0,
-  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
 });
 
 const Book = mongoose.model("Book", bookSchema);

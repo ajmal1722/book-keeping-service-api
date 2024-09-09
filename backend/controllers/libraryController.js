@@ -126,7 +126,10 @@ export const createLibrary = async (req, res, next) => {
         }
 
         // Create a new library instance
-        const newLibrary = new Library({ name: name.trim() });
+        const newLibrary = new Library({
+            name: name.trim(),
+            owner: userId
+        });
         
         // Save the library to the database
         await newLibrary.save();
@@ -322,12 +325,15 @@ export const getLibraryInventory = async (req, res, next) => {
 export const addBookToInventory = async (req, res, next) => {
     try {
         const libraryId = req.params.id;
-        const { bookId } = req.body;
+        const { bookId, charge } = req.body;
         const userId = req.user.id;
 
         // Validate input
         if (!bookId) {
             return next(createError('Book ID is required', 400)); // Bad Request
+        }
+        if (!charge) {
+            return next(createError('Charge is required', 400)); // Bad Request
         }
 
         // Check if the library exists
@@ -354,12 +360,16 @@ export const addBookToInventory = async (req, res, next) => {
         }
 
         // Check if the book is already in the inventory
-        if (library.inventory.includes(bookId)) {
+        const isBookPresent = library.inventory.some(item => item.bookId.equals(bookId));
+        if (isBookPresent) {
             return next(createError('Book already exists in the inventory', 409)); // Conflict
         }
         
         // Add the book to the library's inventory
-        library.inventory.push(bookId);
+        library.inventory.push({
+            bookId: book._id,
+            charge,
+        });
         await library.save();
 
         res.status(200).json({
