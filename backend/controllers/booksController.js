@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Book from "../models/bookSchema.js";
 import User from "../models/userSchema.js";
 import createError from "../utils/error.js";
@@ -22,14 +23,88 @@ export const getSingleBook = async (req, res, next) => {
         }
 
         // Fetch the book from the database by ID
-        const book = await Book.findById(bookId);
+        const book = await Book.aggregate([
+            {
+                $match: {
+                    _id: mongoose.Types.ObjectId.createFromHexString(bookId)
+                }
+            },
+            {
+                $lookup: {
+                    from: 'users', // Name of the collection
+                    localField: 'author', // Local field (author ID) in the Book collection
+                    foreignField: '_id', // Foreign field in the Author collection
+                    as: 'author_details' // Output array containing the author details
+                }
+            },
+            {
+                $lookup: {
+                    from: 'users', // Name of the User (Borrower) collection
+                    localField: 'borrower', // Local field (borrower ID) in the Book collection
+                    foreignField: '_id', // Foreign field in the User collection
+                    as: 'borrower_details' // Output array containing the borrower details
+                }
+            },
+            {
+                $lookup: {
+                    from: 'libraries', // Name of the Library collection
+                    localField: '_id', // Local field from the Book collection
+                    foreignField: 'inventory', // Foreign field in the Library collection
+                    as: 'library_details' // Output array containing the library details
+                }
+            },
+            {
+                $unwind: { // Unwind each of the arrays into individual objects
+                    path: '$library_details',
+                }
+            },
+            {
+                $unwind: {
+                    path: '$author_details',
+                }
+            },
+            {
+                $unwind: {
+                    path: '$borrower_details',
+                }
+            },
+            {
+                $group: {
+                    _id: '$_id',
+                    title: { $first: '$title' },
+                    isAvailable: { $first: '$isAvailable' },
+                    createdAt: { $first: '$createdAt' },
+                    author_details: { // Fetch a single author object
+                        $first: {
+                            _id: '$author_details._id',
+                            name: '$author_details.name',
+                            email: '$author_details.email'
+                        }
+                    },
+                    borrower_details: { // Fetch a single borrower object
+                        $first: {
+                            _id: '$borrower_details._id',
+                            name: '$borrower_details.name',
+                            email: '$borrower_details.email'
+                        }
+                    },
+                    availableLibraries: { // Fetch a single borrower object
+                        $push: {
+                            _id: '$library_details._id',
+                            name: '$library_details.name',
+                            email: '$library_details.email'
+                        }
+                    },
+                }
+            },
+        ])
 
         // Check if the book exists
         if (!book) {
             return next(createError('Book not found', 404)); // Not Found
         }
 
-        res.status(200).json({ book });
+        res.status(200).json({ book: book[0] });
     } catch (error) {
         next(error);
     }
