@@ -272,7 +272,7 @@ export const getLibraryInventory = async (req, res, next) => {
         const libraryInventory = await Library.aggregate([
             {
                 $match: {
-                  _id: new mongoose.Types.ObjectId('66dc02dcdb7f5c3bc8ca6263')
+                  _id: mongoose.Types.ObjectId.createFromHexString(libraryId)
                 }
             },
             {
@@ -283,7 +283,7 @@ export const getLibraryInventory = async (req, res, next) => {
             {
                 $lookup: {
                     from: 'books',
-                    localField: 'inventory',
+                    localField: 'inventory.bookId',
                     foreignField: '_id',
                     as: 'book_details'
                 }
@@ -291,6 +291,7 @@ export const getLibraryInventory = async (req, res, next) => {
             {
                 $unwind: {
                     path: '$book_details',
+                    preserveNullAndEmptyArrays: true
                 }
             },
             {
@@ -320,7 +321,7 @@ export const getLibraryInventory = async (req, res, next) => {
         // Respond with the library inventory
         res.status(200).json({
             message: 'Library inventory retrieved successfully',
-            library: libraryInventory[0]
+            library: libraryInventory
         });
     } catch (error) {
         next(error);
