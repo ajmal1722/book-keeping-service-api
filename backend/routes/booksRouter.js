@@ -8,6 +8,7 @@ import {
     updateBook,
     deleteBook
 } from '../controllers/booksController.js';
+import upload from '../config/multer.js';
 
 // Middleware for authorization
 router.use(verifyAccessToken);
@@ -16,7 +17,7 @@ router.get('/', getBooks);
 
 router.get('/:id', getSingleBook);
 
-router.post('/', createBook);
+router.post('/', upload.single('image'), createBook);
 
 router.put('/:id', updateBook);
 

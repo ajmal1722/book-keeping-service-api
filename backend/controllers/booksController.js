@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Book from "../models/bookSchema.js";
 import User from "../models/userSchema.js";
 import createError from "../utils/error.js";
+import bucket from "../config/firbaseConfig.js";
 
 export const getBooks = async (req, res, next) => {
     try {
@@ -142,53 +143,87 @@ export const createBook = async (req, res, next) => {
     try {
         const authorId = req.user.id;
         const { title } = req.body;
-        
+        const file = req.file;
+    
         if (!title.trim()) {
             return next(createError('Title is required', 400));
         }
 
+        if (!file) {
+            return next(createError('Image is required', 400));
+        }
+    
         // Check if the title exists
         const existingBook = await Book.findOne({ title });
         if (existingBook) {
-            return next(createError('Book with same title is already exists', 409))
+            return next(createError('Book with the same title already exists', 409));
         }
-
+    
         // Check if the author exists
         const author = await User.findById(authorId);
         if (!author) {
             return next(createError('Author not found', 404)); // Not Found
         }
-
-        // Create a new book
-        const newBook = new Book({
-            title: title.trim(), // Trim whitespace
-            author: author._id, // Reference to the author's ID
+    
+        // Handle image file upload 
+        let imageUrl = '';
+        if (file) {
+            // Upload the image to Firebase Storage
+            const blob = bucket.file(`book-images/${Date.now()}_${file.originalname}`);
+            const blobStream = blob.createWriteStream({
+            metadata: {
+                contentType: file.mimetype,
+            },
         });
-
-        // Save the new book to the database
-        await newBook.save();
-
-        // Check and add "author" role if not already present
-        if (!author.roles.includes('author')) {
-            author.roles.push('author');
-            await author.save(); // Save the user with updated roles
-        }
-
-        // Update the author's booksWritten list
-        if (!author.booksWritten.includes(newBook._id)) {
-            author.booksWritten.push(newBook._id);
-            await author.save(); // Save the updated author
-        }
-
-        res.status(201).json({ 
-            message: 'Book created successfully', 
-            book: { 
-                id: newBook._id, 
-                title: newBook.title, 
-                author: author.name, 
-                createdAt: newBook.createdAt 
-            } 
+  
+        blobStream.on('error', (err) => {
+            console.error('Upload error:', err); // Log detailed error
+            return next(createError('Image upload failed', 500));
         });
+  
+        blobStream.on('finish', async () => {
+            // Construct a public URL for the uploaded image
+            imageUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+    
+            // Create a new book with the image URL
+            const newBook = new Book({
+                title: title.trim(), // Trim whitespace
+                author: author._id, // Reference to the author's ID
+                imageUrl, // Set the image URL
+            });
+  
+            // Save the new book to the database
+            await newBook.save();
+    
+            // Check and add "author" role if not already present
+            if (!author.roles.includes('author')) {
+                author.roles.push('author');
+                await author.save(); // Save the user with updated roles
+            }
+    
+            // Update the author's booksWritten list
+            if (!author.booksWritten.includes(newBook._id)) {
+                author.booksWritten.push(newBook._id);
+                await author.save(); // Save the updated author
+            }
+  
+            res.status(201).json({
+                message: 'Book created successfully',
+                book: {
+                id: newBook._id,
+                title: newBook.title,
+                author: author.name,
+                imageUrl: newBook.imageUrl,
+                createdAt: newBook.createdAt,
+                },
+            });
+        });
+  
+            // Pipe the file data into the blobStream
+            blobStream.end(file.buffer);
+        } else {
+            return next(createError('Image file is required', 400));
+        }
     } catch (error) {
         next(error);
     }
