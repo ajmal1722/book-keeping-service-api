@@ -38,34 +38,62 @@ export const getSingleBook = async (req, res, next) => {
                 }
             },
             {
-                $lookup: {
-                    from: 'users', // Name of the User (Borrower) collection
-                    localField: 'borrower', // Local field (borrower ID) in the Book collection
-                    foreignField: '_id', // Foreign field in the User collection
-                    as: 'borrower_details' // Output array containing the borrower details
-                }
-            },
-            {
-                $lookup: {
-                    from: 'libraries', // Name of the Library collection
-                    localField: '_id', // Local field from the Book collection
-                    foreignField: 'inventory', // Foreign field in the Library collection
-                    as: 'library_details' // Output array containing the library details
-                }
-            },
-            {
-                $unwind: { // Unwind each of the arrays into individual objects
-                    path: '$library_details',
-                }
-            },
-            {
                 $unwind: {
                     path: '$author_details',
                 }
             },
             {
+                $lookup: {
+                    from: 'libraries', // Name of the Library collection
+                    let: { bookId: '$_id' }, // Reference the book ID
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $in: ['$$bookId', '$inventory.bookId'], // Match the book ID within the inventory array
+                                },
+                            },
+                        },
+                        {
+                            $unwind: '$inventory', // Unwind the inventory array to get each inventory item
+                        },
+                        {
+                            $match: {
+                                'inventory.bookId': mongoose.Types.ObjectId.createFromHexString(bookId) // Ensure the inventory item matches the book ID
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'users', // Name of the User (Borrower) collection
+                                localField: 'inventory.borrower', // Local field (borrower ID) in the inventory
+                                foreignField: '_id', // Foreign field in the User collection
+                                as: 'inventory.borrower_details' // Output array containing the borrower details
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: '$inventory.borrower_details', // Unwind the borrower details array
+                                preserveNullAndEmptyArrays: true, // Allow for no borrower details
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 1,
+                                name: 1,
+                                'inventory.bookId': 1,
+                                'inventory.isAvailable': 1,
+                                'inventory.borrower': 1,
+                                'inventory.borrower_details': 1 // Include borrower details
+                            }
+                        }
+                    ],
+                    as: 'library_details' // Output array containing the library details
+                }
+            },
+            {
                 $unwind: {
-                    path: '$borrower_details',
+                    path: '$library_details',
+                    preserveNullAndEmptyArrays: true // Allow for libraries without any inventory
                 }
             },
             {
@@ -81,26 +109,27 @@ export const getSingleBook = async (req, res, next) => {
                             email: '$author_details.email'
                         }
                     },
-                    borrower_details: { // Fetch a single borrower object
-                        $first: {
-                            _id: '$borrower_details._id',
-                            name: '$borrower_details.name',
-                            email: '$borrower_details.email'
-                        }
-                    },
-                    availableLibraries: { // Fetch a single borrower object
+                    library_details: { // Collect all library details as objects
                         $push: {
                             _id: '$library_details._id',
                             name: '$library_details.name',
-                            email: '$library_details.email'
+                            inventory: {
+                                isAvailable: '$library_details.inventory.isAvailable',
+                                borrower: '$library_details.inventory.borrower',
+                                borrower_details: {
+                                    _id: '$library_details.inventory.borrower_details._id',
+                                    name: '$library_details.inventory.borrower_details.name',
+                                    email: '$library_details.inventory.borrower_details.email'
+                                }
+                            }
                         }
                     },
                 }
             },
-        ])
+        ]);
 
         // Check if the book exists
-        if (!book) {
+        if (!book.length) {
             return next(createError('Book not found', 404)); // Not Found
         }
 
