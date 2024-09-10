@@ -246,32 +246,72 @@ export const updateBook = async (req, res, next) => {
             return next(createError('You do not have permission. Only author can update the book', 403)); // Forbidden
         }
 
-        // Validate input data for updates
-        const { title } = req.body;
-        if (!title) {
-            return next(createError('Title is required', 400)); // Bad Request
+        // Handle cover image upload
+        let imageUrl = book.imageUrl; // Retain existing image URL if no new image is uploaded
+        if (req.file) {
+            const file = req.file;
+            
+            // Upload the new image to Firebase Storage
+            const blob = bucket.file(`book-images/${Date.now()}_${file.originalname}`);
+            const blobStream = blob.createWriteStream({
+                metadata: {
+                    contentType: file.mimetype,
+                },
+            });
+
+            blobStream.on('error', (err) => {
+                console.error('Upload error:', err); // Log detailed error
+                return next(createError('Image upload failed', 500));
+            });
+
+            blobStream.on('finish', async () => {
+                // Construct a public URL for the uploaded image
+                imageUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+
+                // Update the book with new data
+                const updatedBook = await Book.findByIdAndUpdate(
+                    bookId,
+                    { title: req.body.title.trim(), imageUrl }, // Update title and imageUrl
+                    { new: true, runValidators: true } // Return updated document and run schema validators
+                );
+
+                res.status(200).json({ 
+                    message: 'Book updated successfully', 
+                    book: { 
+                        id: updatedBook._id, 
+                        title: updatedBook.title, 
+                        author: updatedBook.author, 
+                        imageUrl: updatedBook.imageUrl,
+                        updatedAt: updatedBook.updatedAt 
+                    } 
+                });
+            });
+
+            // Pipe the file data into the blobStream
+            blobStream.end(req.file.buffer);
+        } else {
+            // Update the book with new data (excluding imageUrl)
+            const updatedBook = await Book.findByIdAndUpdate(
+                bookId,
+                { title: req.body.title.trim() }, // Only update title
+                { new: true, runValidators: true } // Return updated document and run schema validators
+            );
+
+            res.status(200).json({ 
+                message: 'Book updated successfully', 
+                book: { 
+                    id: updatedBook._id, 
+                    title: updatedBook.title, 
+                    author: updatedBook.author, 
+                    imageUrl: updatedBook.imageUrl,
+                    updatedAt: updatedBook.updatedAt 
+                } 
+            });
         }
-
-        // Update the book with new data
-        const updatedBook = await Book.findByIdAndUpdate(
-            bookId,
-            { title: title.trim() }, // Only update provided fields
-            { new: true, runValidators: true } // Return updated document and run schema validators
-        );
-
-        res.status(200).json({ 
-            message: 'Book updated successfully', 
-            book: { 
-                id: updatedBook._id, 
-                title: updatedBook.title, 
-                author: updatedBook.author, 
-                updatedAt: updatedBook.updatedAt 
-            } 
-        });
     } catch (error) {
         next(error);
     }
-}
+};
 
 export const deleteBook = async (req, res, next) => {
     try {

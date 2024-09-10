@@ -19,7 +19,7 @@ router.get('/:id', getSingleBook);
 
 router.post('/', upload.single('image'), createBook);
 
-router.put('/:id', updateBook);
+router.put('/:id', upload.single('image'), updateBook);
 
 router.delete('/:id', deleteBook);
 
