@@ -38,12 +38,13 @@ export const getSingleLibrary = async (req, res, next) => {
             {
                 $unwind: {
                     path: '$inventory',
+                    preserveNullAndEmptyArrays: true
                 }
             },
             {
                 $lookup: {
                     from: 'books',
-                    localField: 'inventory',
+                    localField: 'inventory.bookId',
                     foreignField: '_id',
                     as: 'book_details'
                 }
@@ -51,42 +52,46 @@ export const getSingleLibrary = async (req, res, next) => {
             {
                 $unwind: {
                     path: '$book_details',
+                    preserveNullAndEmptyArrays: true
                 }
             },
             {
                 $lookup: {
                     from: 'users',
-                    localField: 'book_details.borrower',
+                    localField: 'inventory.borrower',
                     foreignField: '_id',
                     as: 'borrower_details'
                 }
             },
             {
                 $unwind: {
-                    path: '$borrower_details'
+                    path: '$borrower_details',
+                    preserveNullAndEmptyArrays: true
                 }
             },
             {
                 $group: {
-                    _id: { _id: '$_id', name: '$name', createdAt: '$createdAt' }, // Group by library fields
-                    books: {
+                    _id: '$_id',
+                    name: { $first: '$name' },
+                    createdAt: { $first: '$createdAt' },
+                    inventory: {
                         $push: {
-                            _id: '$book_details._id',
-                            title: '$book_details.title',
-                            author: '$book_details.author',
-                            isBorrowed: '$book_details.isBorrowed',
-                            borrower: {
-                                _id: '$borrower_details._id',
-                                name: '$borrower_details.name',
-                                email: '$borrower_details.email'
+                            book_details: {
+                                bookId: '$book_details._id',
+                                title: '$book_details.title',
+                                charge: '$inventory.charge',
+                                isAvailable: '$inventory.isAvailable',
+                                borrower_details: {
+                                    _id: '$borrower_details._id',
+                                    name: '$borrower_details.name',
+                                    email: '$borrower_details.email',
+                                },
+                                borrowedAt: '$inventory.borrowedAt'
                             },
-                            isAvailable: '$book_details.isAvailable',
-                            charge: '$book_details.charge',
-                            borrowedAt: '$book_details.borrowedAt'
                         }
                     }
                 }
-            },
+            }
         ])
         
         if (!libraryDetails.length) {

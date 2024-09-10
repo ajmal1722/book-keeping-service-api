@@ -115,7 +115,6 @@ export const getSingleBook = async (req, res, next) => {
                             name: '$library_details.name',
                             inventory: {
                                 isAvailable: '$library_details.inventory.isAvailable',
-                                borrower: '$library_details.inventory.borrower',
                                 borrower_details: {
                                     _id: '$library_details.inventory.borrower_details._id',
                                     name: '$library_details.inventory.borrower_details.name',
