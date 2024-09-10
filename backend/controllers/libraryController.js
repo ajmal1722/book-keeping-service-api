@@ -416,7 +416,7 @@ export const removeBookFromInventory = async (req, res, next) => {
         }
 
         // Check if the book is in the library's inventory
-        const bookIndex = library.inventory.indexOf(bookId);
+        const bookIndex = library.inventory.findIndex(item => item.bookId.equals(bookId));
         if (bookIndex === -1) {
             return next(createError('Book not found in the inventory', 404)); // Not Found
         }
