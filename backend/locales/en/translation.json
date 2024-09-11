@@ -36,5 +36,11 @@
     "BOOK_ADDED_TO_INVENTORY_SUCCESSFULLY": "Book added to inventory successfully",
     "LIBRARY_ID_AND_BOOK_ID_REQUIRED": "Library ID and Book ID are required",
     "ACCESS_DENIED_TO_REMOVE_BOOK": "You do not have access to remove books from this library",
-    "BOOK_REMOVED_FROM_INVENTORY_SUCCESSFULLY": "Book removed from inventory successfully"
+    "BOOK_REMOVED_FROM_INVENTORY_SUCCESSFULLY": "Book removed from inventory successfully",
+    "NAME_EMAIL_PASSWORD_REQUIRED": "Name, email, and password are required",
+    "USER_ALREADY_EXISTS": "User already exists",
+    "USER_CREATED_SUCCESSFULLY": "User is created",
+    "EMAIL_PASSWORD_REQUIRED": "Email and password are required",
+    "INCORRECT_PASSWORD": "Incorrect password",
+    "LOGIN_SUCCESSFUL": "Login successful"
 }

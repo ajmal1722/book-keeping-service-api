@@ -3,29 +3,22 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import createError from "../utils/error.js";
 
-// Utility function to handle errors
-// const createError = (message, statusCode) => {
-//     const error = new Error(message);
-//     error.statusCode = statusCode;
-//     return error;
-// };
-
 export const userCreate = async (req, res, next) => {
     try {
-        const  { name, email, password } = req.body;
-        
+        const { name, email, password } = req.body;
+
         // Check if all required fields are provided
         if (!name || !email || !password) {
-            return next(createError('Name, email and password are required', 400))
+            return next(createError(req.t('NAME_EMAIL_PASSWORD_REQUIRED'), 400));
         }
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return next(createError('User already exists', 400))
+            return next(createError(req.t('USER_ALREADY_EXISTS'), 400));
         }
 
         // Hash the password
-        const salt = await bcrypt.genSalt(10)
+        const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
         // Create new user
@@ -40,9 +33,9 @@ export const userCreate = async (req, res, next) => {
         
         // Respond with the created user (excluding the password)
         user.password = undefined;
-        res.status(201).json({ message: 'User is created', user })
+        res.status(201).json({ message: req.t('USER_CREATED_SUCCESSFULLY'), user });
     } catch (error) {
-        next(error)
+        next(error);
     }
 }
 
@@ -52,19 +45,19 @@ export const userLogin = async (req, res, next) => {
 
         // Check if all required fields are provided
         if (!email || !password) {
-            return next(createError('Email and password are required', 400)); // Bad Request
+            return next(createError(req.t('EMAIL_PASSWORD_REQUIRED'), 400)); // Bad Request
         }
 
         // Find user by email
         const user = await User.findOne({ email });
         if (!user) {
-            return next(createError('User not found', 404)); // Not Found
+            return next(createError(req.t('USER_NOT_FOUND'), 404)); // Not Found
         }
 
         // Check if the password is correct
         const isPasswordCorrect = await bcrypt.compare(password, user.password);
         if (!isPasswordCorrect) {
-            return next(createError('Incorrect password', 401)); // Unauthorized
+            return next(createError(req.t('INCORRECT_PASSWORD'), 401)); // Unauthorized
         }
 
         const accessToken = jwt.sign(
@@ -98,7 +91,7 @@ export const userLogin = async (req, res, next) => {
         });
         
         res.status(200).json({ 
-            message: 'Login successful', 
+            message: req.t('LOGIN_SUCCESSFUL'), 
             user: { 
                 id: user._id, 
                 name: user.name, 
@@ -106,6 +99,6 @@ export const userLogin = async (req, res, next) => {
             }
         });
     } catch (error) {
-        next(error)
+        next(error);
     }
 }

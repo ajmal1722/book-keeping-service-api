@@ -36,5 +36,11 @@
     "BOOK_ADDED_TO_INVENTORY_SUCCESSFULLY": "पुस्तक सफलतापूर्वक इन्वेंट्री में जोड़ी गई",
     "LIBRARY_ID_AND_BOOK_ID_REQUIRED": "पुस्तकालय ID और पुस्तक ID आवश्यक हैं",
     "ACCESS_DENIED_TO_REMOVE_BOOK": "आपको इस पुस्तकालय से पुस्तकों को हटाने की अनुमति नहीं है",
-    "BOOK_REMOVED_FROM_INVENTORY_SUCCESSFULLY": "पुस्तक सफलतापूर्वक इन्वेंट्री से हटा दी गई"
+    "BOOK_REMOVED_FROM_INVENTORY_SUCCESSFULLY": "पुस्तक सफलतापूर्वक इन्वेंट्री से हटा दी गई",
+    "NAME_EMAIL_PASSWORD_REQUIRED": "नाम, ईमेल और पासवर्ड आवश्यक हैं",
+    "USER_ALREADY_EXISTS": "उपयोगकर्ता पहले से मौजूद है",
+    "USER_CREATED_SUCCESSFULLY": "उपयोगकर्ता सफलतापूर्वक बनाया गया",
+    "EMAIL_PASSWORD_REQUIRED": "ईमेल और पासवर्ड की आवश्यकता है",
+    "INCORRECT_PASSWORD": "गलत पासवर्ड",
+    "LOGIN_SUCCESSFUL": "लॉगिन सफल"
 }  
