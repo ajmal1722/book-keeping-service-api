@@ -8,6 +8,8 @@ import booksRouter from './routes/booksRouter.js';
 import userRouter from './routes/userRouter.js'; 
 import borrowRouter from './routes/borrowingRouter.js';
 import libraryRouter from './routes/libraryRoter.js';
+import i18next from './config/i18nConfig.js';
+import i18nextMiddleware from 'i18next-http-middleware';
 
 dotenv.config();
 
@@ -23,6 +25,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser()); // Parse cookies
 app.use(morgan('tiny')); // Logging requests
+
+// Use i18next middleware in Express
+app.use(i18nextMiddleware.handle(i18next));
 
 // Routes
 app.use('/api/users', userRouter);

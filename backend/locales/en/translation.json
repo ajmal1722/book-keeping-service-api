@@ -1,0 +1,11 @@
+{
+    "BOOK_CREATED_SUCCESS": "Book created successfully",
+    "BOOK_UPDATED_SUCCESS": "Book updated successfully",
+    "TITLE_REQUIRED": "Title is required",
+    "BOOK_EXISTS": "Book with the same title already exists",
+    "AUTHOR_NOT_FOUND": "Author not found",
+    "PERMISSION_DENIED": "You do not have permission. Only the author can update the book",
+    "IMAGE_REQUIRED": "Image is required",
+    "UPLOAD_FAILED": "Image upload failed",
+    "BOOK_NOT_FOUND": "Book not found"
+} 

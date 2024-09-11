@@ -145,19 +145,19 @@ export const createBook = async (req, res, next) => {
         const authorId = req.user.id;
         const { title } = req.body;
         const file = req.file;
-    
-        if (!title.trim()) {
-            return next(createError('Title is required', 400));
+        
+        if (!title?.trim()) {
+            return next(createError(req.t('TITLE_REQUIRED'), 400));
         }
 
         if (!file) {
-            return next(createError('Image is required', 400));
+            return next(createError(req.t('IMAGE_REQUIRED'), 400));
         }
     
         // Check if the title exists
         const existingBook = await Book.findOne({ title });
         if (existingBook) {
-            return next(createError('Book with the same title already exists', 409));
+            return next(createError(req.t('BOOK_EXISTS'), 409));
         }
     
         // Check if the author exists
