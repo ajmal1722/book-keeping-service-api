@@ -11,14 +11,14 @@ export const getLibraries = async (req, res, next) => {
 
         // If no libraries are found
         if (libraries.length === 0) {
-            return res.status(404).json({ message: 'No libraries found' });
+            return res.status(404).json({ message: req.t('NO_LIBRARIES_FOUND') });
         }
 
         res.status(200).json({ libraries });
     } catch (error) {
         next(error);
     }
-}
+};
 
 export const getSingleLibrary = async (req, res, next) => {
     try {
@@ -26,7 +26,7 @@ export const getSingleLibrary = async (req, res, next) => {
 
         // Validate input
         if (!libraryId) {
-            return next(createError('Library ID is required', 400)); // Bad Request
+            return next(createError(req.t('LIBRARY_ID_REQUIRED'), 400)); // Bad Request
         }
 
         const libraryDetails = await Library.aggregate([
@@ -93,21 +93,21 @@ export const getSingleLibrary = async (req, res, next) => {
                     }
                 }
             }
-        ])
+        ]);
         
         if (!libraryDetails.length) {
-            return next(createError('Library not found', 404)); // Not Found
+            return next(createError(req.t('LIBRARY_NOT_FOUND'), 404)); // Not Found
         }
 
         // Respond with the library details
         res.status(200).json({
-            message: 'Library details retrieved successfully',
-            library: libraryDetails
+            message: req.t('LIBRARY_DETAILS_RETRIEVED_SUCCESSFULLY'),
+            library: libraryDetails[0] // Return the first item in the array
         });
     } catch (error) {
         next(error);
     }
-}
+};
 
 export const createLibrary = async (req, res, next) => {
     try {
@@ -116,19 +116,19 @@ export const createLibrary = async (req, res, next) => {
 
         // Validate input
         if (!name?.trim()) {
-            return next(createError('Library name is required', 400)); // Bad Request
+            return next(createError(req.t('LIBRARY_NAME_REQUIRED'), 400)); // Bad Request
         }
 
         // Fetch the user to verify roles
         const user = await User.findById(userId);
         if (!user) {
-            return next(createError('User not found', 404)); // User not found
+            return next(createError(req.t('USER_NOT_FOUND'), 404)); // User not found
         }
 
         // Check if a library with the same name already exists
         const existingLibrary = await Library.findOne({ name: name.trim() });
         if (existingLibrary) {
-            return next(createError('A library with this name already exists', 409)); // Conflict
+            return next(createError(req.t('LIBRARY_ALREADY_EXISTS'), 409)); // Conflict
         }
 
         // Create a new library instance
@@ -152,13 +152,13 @@ export const createLibrary = async (req, res, next) => {
 
         // Respond with success message
         res.status(201).json({ 
-            message: 'Library created successfully', 
+            message: req.t('LIBRARY_CREATED_SUCCESSFULLY'), 
             library: { id: newLibrary._id, name: newLibrary.name } 
         });
     } catch (error) {
         next(error);
     }
-}
+};
 
 export const updateLibrary = async (req, res, next) => {
     try {
@@ -168,24 +168,24 @@ export const updateLibrary = async (req, res, next) => {
 
         // Validate input
         if (!libraryId) {
-            return next(createError('Library ID is required', 400)); // Bad Request
+            return next(createError(req.t('LIBRARY_ID_REQUIRED'), 400)); // Bad Request
         }
 
-        // check if the library exists
+        // Check if the library exists
         const library = await Library.findById(libraryId);
         if (!library) {
-            return next(createError('Library not found', 404));
+            return next(createError(req.t('LIBRARY_NOT_FOUND'), 404));
         }
         
         // Fetch the user to verify roles
         const user = await User.findById(userId);
         if (!user) {
-            return next(createError('User not found', 404)); // User not found
+            return next(createError(req.t('USER_NOT_FOUND'), 404)); // User not found
         }
 
         // Check if the user has the 'library' role and owns the library
         if (!user.roles.includes('library') || !user.librariesOwned.includes(libraryId)) {
-            return next(createError('You do not have access to delete this library', 403)); // Forbidden
+            return next(createError(req.t('ACCESS_DENIED'), 403)); // Forbidden
         }
 
         // Update the library
@@ -197,7 +197,7 @@ export const updateLibrary = async (req, res, next) => {
 
         // Respond with success message
         res.status(200).json({ 
-            message: 'Library updated successfully', 
+            message: req.t('LIBRARY_UPDATED_SUCCESSFULLY'), 
             library: { 
                 id: updatedLibrary._id, 
                 name: updatedLibrary.name 
@@ -206,7 +206,7 @@ export const updateLibrary = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-}
+};
 
 export const deleteLibrary = async (req, res, next) => {
     try {
@@ -215,24 +215,24 @@ export const deleteLibrary = async (req, res, next) => {
 
         // Validate input
         if (!libraryId) {
-            return next(createError('Library ID is required', 400)); // Bad Request
+            return next(createError(req.t('LIBRARY_ID_REQUIRED'), 400)); // Bad Request
         }
 
-        // check if the library exists
+        // Check if the library exists
         const library = await Library.findById(libraryId);
         if (!library) {
-            return next(createError('Library not found', 404));
+            return next(createError(req.t('LIBRARY_NOT_FOUND'), 404));
         }
         
         // Fetch the user to verify roles
         const user = await User.findById(userId);
         if (!user) {
-            return next(createError('User not found', 404)); // User not found
+            return next(createError(req.t('USER_NOT_FOUND'), 404)); // User not found
         }
 
         // Check if the user has the 'library' role and owns the library
         if (!user.roles.includes('library') || !user.librariesOwned.includes(libraryId)) {
-            return next(createError('You do not have access to delete this library', 403)); // Forbidden
+            return next(createError(req.t('ACCESS_DENIED'), 403)); // Forbidden
         }
 
         // Find and delete the Library
@@ -240,7 +240,7 @@ export const deleteLibrary = async (req, res, next) => {
 
         // Check if the library was found and deleted
         if (!deletedLibrary) {
-            return next(createError('Library not found', 404)); // Not Found
+            return next(createError(req.t('LIBRARY_NOT_FOUND'), 404)); // Not Found
         }
 
         // Remove the library from the user's librariesOwned list
@@ -249,7 +249,7 @@ export const deleteLibrary = async (req, res, next) => {
 
         // Respond with success message
         res.status(200).json({ 
-            message: 'Library deleted successfully', 
+            message: req.t('LIBRARY_DELETED_SUCCESSFULLY'), 
             deletedId: deletedLibrary._id 
         });
     } catch (error) {
@@ -267,7 +267,7 @@ export const getLibraryInventory = async (req, res, next) => {
 
         // Validate input
         if (!libraryId) {
-            return next(createError('Library ID is required', 400)); // Bad Request
+            return next(createError(req.t('LIBRARY_ID_REQUIRED'), 400)); // Bad Request
         }
 
         const libraryInventory = await Library.aggregate([
@@ -316,12 +316,12 @@ export const getLibraryInventory = async (req, res, next) => {
         ]);
 
         if (!libraryInventory.length) {
-            return next(createError('Library not found or inventory is empty', 404)); // Not Found
+            return next(createError(req.t('LIBRARY_NOT_FOUND_OR_EMPTY_INVENTORY'), 404)); // Not Found
         }
 
         // Respond with the library inventory
         res.status(200).json({
-            message: 'Library inventory retrieved successfully',
+            message: req.t('LIBRARY_INVENTORY_RETRIEVED_SUCCESSFULLY'),
             library: libraryInventory
         });
     } catch (error) {
@@ -337,39 +337,39 @@ export const addBookToInventory = async (req, res, next) => {
 
         // Validate input
         if (!bookId) {
-            return next(createError('Book ID is required', 400)); // Bad Request
+            return next(createError(req.t('BOOK_ID_REQUIRED'), 400)); // Bad Request
         }
         if (!charge) {
-            return next(createError('Charge is required', 400)); // Bad Request
+            return next(createError(req.t('CHARGE_REQUIRED'), 400)); // Bad Request
         }
 
         // Check if the library exists
         const library = await Library.findById(libraryId);
         if (!library) {
-            return next(createError('Library not found', 404)); // Not Found
+            return next(createError(req.t('LIBRARY_NOT_FOUND'), 404)); // Not Found
         }
 
         // Fetch the user to verify roles and ownership
         const user = await User.findById(userId);
         if (!user) {
-            return next(createError('User not found', 404)); // Not Found
+            return next(createError(req.t('USER_NOT_FOUND'), 404)); // Not Found
         }
 
         // Check if the user has the 'library' role and owns the library
         if (!user.roles.includes('library') || !user.librariesOwned.includes(libraryId)) {
-            return next(createError('You do not have access to add books to this library', 403)); // Forbidden
+            return next(createError(req.t('ACCESS_DENIED_TO_ADD_BOOK'), 403)); // Forbidden
         }
 
         // Check if the book exists
         const book = await Book.findById(bookId);
         if (!book) {
-            return next(createError('Book not found', 404)); // Not Found
+            return next(createError(req.t('BOOK_NOT_FOUND'), 404)); // Not Found
         }
 
         // Check if the book is already in the inventory
         const isBookPresent = library.inventory.some(item => item.bookId.equals(bookId));
         if (isBookPresent) {
-            return next(createError('Book already exists in the inventory', 409)); // Conflict
+            return next(createError(req.t('BOOK_ALREADY_IN_INVENTORY'), 409)); // Conflict
         }
         
         // Add the book to the library's inventory
@@ -380,7 +380,7 @@ export const addBookToInventory = async (req, res, next) => {
         await library.save();
 
         res.status(200).json({
-            message: 'Book added to inventory successfully',
+            message: req.t('BOOK_ADDED_TO_INVENTORY_SUCCESSFULLY'),
             inventory: library.inventory,
         });
     } catch (error) {
@@ -396,30 +396,30 @@ export const removeBookFromInventory = async (req, res, next) => {
 
         // Validate input
         if (!libraryId || !bookId) {
-            return next(createError('Library ID and Book ID are required', 400)); // Bad Request
+            return next(createError(req.t('LIBRARY_ID_AND_BOOK_ID_REQUIRED'), 400)); // Bad Request
         }
 
         // Check if the library exists
         const library = await Library.findById(libraryId);
         if (!library) {
-            return next(createError('Library not found', 404)); // Not Found
+            return next(createError(req.t('LIBRARY_NOT_FOUND'), 404)); // Not Found
         }
 
         // Fetch the user to verify roles and ownership
         const user = await User.findById(userId);
         if (!user) {
-            return next(createError('User not found', 404)); // Not Found
+            return next(createError(req.t('USER_NOT_FOUND'), 404)); // Not Found
         }
         
         // Check if the user has the 'library' role and owns the library
         if (!user.roles.includes('library') || !user.librariesOwned.includes(libraryId)) {
-            return next(createError('You do not have access to remove books from this library', 403)); // Forbidden
+            return next(createError(req.t('ACCESS_DENIED_TO_REMOVE_BOOK'), 403)); // Forbidden
         }
 
         // Check if the book is in the library's inventory
         const bookIndex = library.inventory.findIndex(item => item.bookId.equals(bookId));
         if (bookIndex === -1) {
-            return next(createError('Book not found in the inventory', 404)); // Not Found
+            return next(createError(req.t('BOOK_NOT_FOUND_IN_INVENTORY'), 404)); // Not Found
         }
 
         // Remove the book from the library's inventory
@@ -427,7 +427,7 @@ export const removeBookFromInventory = async (req, res, next) => {
         await library.save();
 
         res.status(200).json({
-            message: 'Book removed from inventory successfully',
+            message: req.t('BOOK_REMOVED_FROM_INVENTORY_SUCCESSFULLY'),
             inventory: library.inventory,
         });
     } catch (error) {

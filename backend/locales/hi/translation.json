@@ -19,5 +19,22 @@
     "BOOK_BORROWED_SUCCESSFULLY": "पुस्तक सफलतापूर्वक उधार ली गई",
     "BOOK_NOT_BORROWED": "पुस्तक उधार नहीं ली गई है",
     "BOOK_NOT_BORROWED_BY_USER": "आप वह पुस्तक नहीं लौटा सकते जो आपने उधार नहीं ली है",
-    "BOOK_RETURNED_SUCCESSFULLY": "पुस्तक सफलतापूर्वक लौटाई गई"
+    "BOOK_RETURNED_SUCCESSFULLY": "पुस्तक सफलतापूर्वक लौटाई गई",
+    "NO_LIBRARIES_FOUND": "कोई पुस्तकालय नहीं मिला",
+    "LIBRARY_DETAILS_RETRIEVED_SUCCESSFULLY": "पुस्तकालय की जानकारी सफलतापूर्वक प्राप्त की गई",
+    "LIBRARY_NAME_REQUIRED": "पुस्तकालय का नाम आवश्यक है",
+    "LIBRARY_ALREADY_EXISTS": "इस नाम के साथ एक पुस्तकालय पहले से मौजूद है",
+    "LIBRARY_CREATED_SUCCESSFULLY": "पुस्तकालय सफलतापूर्वक बनाया गया",
+    "LIBRARY_UPDATED_SUCCESSFULLY": "पुस्तकालय सफलतापूर्वक अपडेट किया गया",
+    "ACCESS_DENIED": "आपको इस संसाधन की अनुमति नहीं है",
+    "LIBRARY_DELETED_SUCCESSFULLY": "पुस्तकालय सफलतापूर्वक हटाया गया",
+    "LIBRARY_NOT_FOUND_OR_EMPTY_INVENTORY": "पुस्तकालय नहीं मिला या इन्वेंट्री खाली है",
+    "LIBRARY_INVENTORY_RETRIEVED_SUCCESSFULLY": "पुस्तकालय की इन्वेंट्री सफलतापूर्वक प्राप्त की गई",
+    "CHARGE_REQUIRED": "शुल्क आवश्यक है",
+    "ACCESS_DENIED_TO_ADD_BOOK": "आपको इस पुस्तकालय में पुस्तकों को जोड़ने की अनुमति नहीं है",
+    "BOOK_ALREADY_IN_INVENTORY": "पुस्तक पहले से ही इन्वेंट्री में मौजूद है",
+    "BOOK_ADDED_TO_INVENTORY_SUCCESSFULLY": "पुस्तक सफलतापूर्वक इन्वेंट्री में जोड़ी गई",
+    "LIBRARY_ID_AND_BOOK_ID_REQUIRED": "पुस्तकालय ID और पुस्तक ID आवश्यक हैं",
+    "ACCESS_DENIED_TO_REMOVE_BOOK": "आपको इस पुस्तकालय से पुस्तकों को हटाने की अनुमति नहीं है",
+    "BOOK_REMOVED_FROM_INVENTORY_SUCCESSFULLY": "पुस्तक सफलतापूर्वक इन्वेंट्री से हटा दी गई"
 }  
