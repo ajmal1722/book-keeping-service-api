@@ -10,5 +10,14 @@
     "BOOK_NOT_FOUND": "पुस्तक नहीं मिली",
     "DELETE_SUCCESS": "पुस्तक सफलतापूर्वक हटा दी गई",
     "DELETE_FAILED": "पुस्तक हटाने में विफल",
-    "BOOK_ID_REQUIRED": "पुस्तक ID आवश्यक है"
+    "BOOK_ID_REQUIRED": "पुस्तक ID आवश्यक है",
+    "LIBRARY_ID_REQUIRED": "पुस्तकालय ID आवश्यक है",
+    "LIBRARY_NOT_FOUND": "पुस्तकालय नहीं मिला",
+    "BOOK_NOT_FOUND_IN_INVENTORY": "इस पुस्तकालय की इन्वेंट्री में पुस्तक नहीं मिली",
+    "BOOK_ALREADY_BORROWED": "पुस्तक पहले से उधार ली गई है",
+    "USER_NOT_FOUND": "उपयोगकर्ता नहीं मिला",
+    "BOOK_BORROWED_SUCCESSFULLY": "पुस्तक सफलतापूर्वक उधार ली गई",
+    "BOOK_NOT_BORROWED": "पुस्तक उधार नहीं ली गई है",
+    "BOOK_NOT_BORROWED_BY_USER": "आप वह पुस्तक नहीं लौटा सकते जो आपने उधार नहीं ली है",
+    "BOOK_RETURNED_SUCCESSFULLY": "पुस्तक सफलतापूर्वक लौटाई गई"
 }  

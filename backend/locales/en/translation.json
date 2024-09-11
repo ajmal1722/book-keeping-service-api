@@ -10,5 +10,14 @@
     "BOOK_NOT_FOUND": "Book not found",
     "DELETE_SUCCESS": "Book deleted successfully",
     "DELETE_FAILED": "Failed to delete the book",
-    "BOOK_ID_REQUIRED": "Book ID is required"
+    "BOOK_ID_REQUIRED": "Book ID is required",
+    "LIBRARY_ID_REQUIRED": "Library ID is required",
+    "LIBRARY_NOT_FOUND": "Library not found",
+    "BOOK_NOT_FOUND_IN_INVENTORY": "Book not found in this library inventory",
+    "BOOK_ALREADY_BORROWED": "Book is already borrowed",
+    "USER_NOT_FOUND": "User not found",
+    "BOOK_BORROWED_SUCCESSFULLY": "Book borrowed successfully",
+    "BOOK_NOT_BORROWED": "Book is not borrowed",
+    "BOOK_NOT_BORROWED_BY_USER": "You cannot return a book that you did not borrow",
+    "BOOK_RETURNED_SUCCESSFULLY": "Book returned successfully"
 }

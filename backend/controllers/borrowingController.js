@@ -1,5 +1,4 @@
 import User from "../models/userSchema.js";
-import Book from "../models/bookSchema.js";
 import Library from "../models/librarySchema.js";
 import createError from "../utils/error.js";
 
@@ -10,30 +9,30 @@ export const borrowBook = async (req, res, next) => {
 
         // Validate input
         if (!libraryId || !bookId) {
-            return next(createError('Library ID and Book ID are required', 400));
+            return next(createError(req.t('LIBRARY_BOOK_ID_REQUIRED'), 400)); // Library ID and Book ID are required
         }
 
         // Find the library by ID
         const library = await Library.findById(libraryId);
         if (!library) {
-            return next(createError('Library not found', 404)); // Library not found
+            return next(createError(req.t('LIBRARY_NOT_FOUND'), 404)); // Library not found
         }
 
         // Find the inventory item in the library for the given book
         const inventoryItem = library.inventory.find(item => item.bookId.equals(bookId));
         if (!inventoryItem) {
-            return next(createError('Book not found in this library inventory', 404)); // Book not found in inventory
+            return next(createError(req.t('BOOK_NOT_FOUND_IN_INVENTORY'), 404)); // Book not found in inventory
         }
 
         // Check if the book is already borrowed
         if (!inventoryItem.isAvailable) {
-            return next(createError('Book is already borrowed', 400)); // Bad Request
+            return next(createError(req.t('BOOK_ALREADY_BORROWED'), 400)); // Book is already borrowed
         }
 
         // Find the user by ID
         const user = await User.findById(userId);
         if (!user) {
-            return next(createError('User not found', 404)); // User not found
+            return next(createError(req.t('USER_NOT_FOUND'), 404)); // User not found
         }
 
         // Check if the user has the 'borrower' role, and add it if not
@@ -50,13 +49,13 @@ export const borrowBook = async (req, res, next) => {
         // Save the updated library to the database
         await library.save();
 
-        // update the user's borrowed books list
+        // Update the user's borrowed books list
         await User.findByIdAndUpdate(userId, {
             $addToSet: { borrowedBooks: bookId }
         });
 
         res.status(200).json({
-            message: 'Book borrowed successfully',
+            message: req.t('BOOK_BORROWED_SUCCESSFULLY'),
             book: {
                 id: bookId,
                 borrower: {
@@ -80,29 +79,29 @@ export const returnBook = async (req, res, next) => {
 
         // Validate input
         if (!libraryId || !bookId) {
-            return next(createError('Library ID and Book ID are required', 400));
+            return next(createError(req.t('LIBRARY_BOOK_ID_REQUIRED'), 400)); // Library ID and Book ID are required
         }
 
         // Find the library by ID
         const library = await Library.findById(libraryId);
         if (!library) {
-            return next(createError('Library not found', 404)); // Library not found
+            return next(createError(req.t('LIBRARY_NOT_FOUND'), 404)); // Library not found
         }
 
         // Find the inventory item in the library for the given book
         const inventoryItem = library.inventory.find(item => item.bookId.equals(bookId));
         if (!inventoryItem) {
-            return next(createError('Book not found in this library inventory', 404)); // Book not found in inventory
+            return next(createError(req.t('BOOK_NOT_FOUND_IN_INVENTORY'), 404)); // Book not found in inventory
         }
 
         // Check if the book is already available
         if (inventoryItem.isAvailable) {
-            return next(createError('Book is not borrowed', 400)); // Bad Request
+            return next(createError(req.t('BOOK_NOT_BORROWED'), 400)); // Book is not borrowed
         }
 
         // Check if the user returning the book is the one who borrowed it
         if (!inventoryItem.borrower.equals(userId)) {
-            return next(createError('You cannot return a book that you did not borrow', 403)); // Forbidden
+            return next(createError(req.t('BOOK_NOT_BORROWED_BY_USER'), 403)); // Forbidden
         }
 
         // Update inventory status to available
@@ -119,7 +118,7 @@ export const returnBook = async (req, res, next) => {
         });
 
         res.status(200).json({
-            message: 'Book returned successfully',
+            message: req.t('BOOK_RETURNED_SUCCESSFULLY'),
             book: {
                 id: bookId,
                 libraryId: library._id,
