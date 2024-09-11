@@ -79,6 +79,7 @@ export const getSingleLibrary = async (req, res, next) => {
                             book_details: {
                                 bookId: '$book_details._id',
                                 title: '$book_details.title',
+                                coverImage: '$book_details.imageUrl',
                                 charge: '$inventory.charge',
                                 isAvailable: '$inventory.isAvailable',
                                 borrower_details: {

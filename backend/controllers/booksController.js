@@ -101,6 +101,7 @@ export const getSingleBook = async (req, res, next) => {
                 $group: {
                     _id: '$_id',
                     title: { $first: '$title' },
+                    coverImage: { $first: '$imageUrl' },
                     isAvailable: { $first: '$isAvailable' },
                     createdAt: { $first: '$createdAt' },
                     author_details: { // Fetch a single author object
