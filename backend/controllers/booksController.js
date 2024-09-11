@@ -20,7 +20,7 @@ export const getSingleBook = async (req, res, next) => {
 
         // Check if the provided ID is valid
         if (!bookId) {
-            return next(createError('Book ID is required', 400));
+            return next(createError(req.t('BOOK_ID_REQUIRED'), 400)); // Book ID is required
         }
 
         // Fetch the book from the database by ID
@@ -131,7 +131,7 @@ export const getSingleBook = async (req, res, next) => {
 
         // Check if the book exists
         if (!book.length) {
-            return next(createError('Book not found', 404)); // Not Found
+            return next(createError(req.t('BOOK_NOT_FOUND'), 404)); // Not Found
         }
 
         res.status(200).json({ book: book[0] });
@@ -163,7 +163,7 @@ export const createBook = async (req, res, next) => {
         // Check if the author exists
         const author = await User.findById(authorId);
         if (!author) {
-            return next(createError('Author not found', 404)); // Not Found
+            return next(createError(req.t('AUTHOR_NOT_FOUND'), 404)); // Not Found
         }
     
         // Handle image file upload 
@@ -179,7 +179,7 @@ export const createBook = async (req, res, next) => {
   
         blobStream.on('error', (err) => {
             console.error('Upload error:', err); // Log detailed error
-            return next(createError('Image upload failed', 500));
+            return next(createError(req.t('UPLOAD_FAILED'), 500));
         });
   
         blobStream.on('finish', async () => {
@@ -209,7 +209,7 @@ export const createBook = async (req, res, next) => {
             }
   
             res.status(201).json({
-                message: 'Book created successfully',
+                message: req.t('BOOK_CREATED_SUCCESS'),
                 book: {
                 id: newBook._id,
                 title: newBook.title,
@@ -239,12 +239,12 @@ export const updateBook = async (req, res, next) => {
         const book = await Book.findById(bookId);
 
         if (!book) {
-            return next(createError('Book not found', 404)); // Book not found
+            return next(createError(req.t('BOOK_NOT_FOUND'), 404)); // Book not found
         }
         
         // Check if the user is the author of the book
         if (book.author.toString() !== userId) { // Converted ObjectId to string 
-            return next(createError('You do not have permission. Only author can update the book', 403)); // Forbidden
+            return next(createError(req.t('PERMISSION_DENIED'), 403)); // Forbidden
         }
 
         // Handle cover image upload
@@ -262,7 +262,7 @@ export const updateBook = async (req, res, next) => {
 
             blobStream.on('error', (err) => {
                 console.error('Upload error:', err); // Log detailed error
-                return next(createError('Image upload failed', 500));
+                return next(createError(req.t('UPLOAD_FAILED'), 500)); // Image upload failed
             });
 
             blobStream.on('finish', async () => {
@@ -277,7 +277,7 @@ export const updateBook = async (req, res, next) => {
                 );
 
                 res.status(200).json({ 
-                    message: 'Book updated successfully', 
+                    message: req.t('BOOK_UPDATED_SUCCESS'), 
                     book: { 
                         id: updatedBook._id, 
                         title: updatedBook.title, 
@@ -299,7 +299,7 @@ export const updateBook = async (req, res, next) => {
             );
 
             res.status(200).json({ 
-                message: 'Book updated successfully', 
+                message: req.t('BOOK_UPDATED_SUCCESS'), 
                 book: { 
                     id: updatedBook._id, 
                     title: updatedBook.title, 
@@ -322,24 +322,24 @@ export const deleteBook = async (req, res, next) => {
         // Find the book by ID
         const book = await Book.findById(bookId);
         if (!book) {
-            return next(createError('Book not found', 404)); // Book not found
+            return next(createError(req.t('BOOK_NOT_FOUND'), 404)); // Book not found
         }
 
         // Find the author by ID
         const author = await User.findById(book.author);
         if (!author) {
-            return next(createError('Author not found', 404)); // Not Found
+            return next(createError(req.t('AUTHOR_NOT_FOUND'), 404)); // Not Found
         }
         
         // Check if the user is the author of the book
         if (book.author.toString() !== userId) { // Converted ObjectId to string 
-            return next(createError('You do not have permission. Only author can delete the book', 403)); // Forbidden
+            return next(createError(req.t('PERMISSION_DENIED'), 403)); // Forbidden
         }
 
         // Delete the book
         const deletedBook = await Book.findByIdAndDelete(bookId);
         if (!deletedBook) {
-            return next(createError('Failed to delete the book', 500)); // Internal Server Error
+            return next(createError(req.t('DELETE_FAILED'), 500)); // Internal Server Error
         }
 
         // Remove the book from the author's booksWritten list
@@ -347,7 +347,7 @@ export const deleteBook = async (req, res, next) => {
         await author.save();
 
         res.status(200).json({ 
-            message: 'Book deleted successfully', 
+            message: req.t('DELETE_SUCCESS'),
             bookId: bookId 
         });
     } catch (error) {

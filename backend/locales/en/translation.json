@@ -7,5 +7,8 @@
     "PERMISSION_DENIED": "You do not have permission. Only the author can update the book",
     "IMAGE_REQUIRED": "Image is required",
     "UPLOAD_FAILED": "Image upload failed",
-    "BOOK_NOT_FOUND": "Book not found"
-} 
+    "BOOK_NOT_FOUND": "Book not found",
+    "DELETE_SUCCESS": "Book deleted successfully",
+    "DELETE_FAILED": "Failed to delete the book",
+    "BOOK_ID_REQUIRED": "Book ID is required"
+}
