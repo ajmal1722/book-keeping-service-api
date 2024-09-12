@@ -2,8 +2,12 @@ import i18next from 'i18next';
 import i18nextMiddleware from 'i18next-http-middleware';
 import Backend from 'i18next-fs-backend';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-// Initialize i18next with filesystem backend
+// Convert the `import.meta.url` to a file path
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 i18next
   .use(Backend)
   .use(i18nextMiddleware.LanguageDetector) // Automatically detect language
@@ -11,8 +15,8 @@ i18next
     fallbackLng: 'en', // Fallback language
     lng: 'en', // Default language
     backend: {
-      // Adjust the path to the locales folder, assuming it's in 'backend/locales'
-      loadPath: path.resolve('./locales/{{lng}}/{{ns}}.json'), 
+      // Adjust the path to the locales folder relative to the backend directory
+      loadPath: path.resolve(__dirname, 'locales/{{lng}}/{{ns}}.json'),
     },
     preload: ['en', 'hi'], // Preload all languages
     ns: ['translation'], // Namespaces to load
