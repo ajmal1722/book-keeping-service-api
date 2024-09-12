@@ -3,11 +3,16 @@ const errorHandler = (err, req, res, next) => {
     
     if (process.env.NODE_ENV === 'production') {
         console.error('Error details:', err);
-
-        // Respond with a user-friendly message in production
-        res.status(statusCode).json({
-            message: 'An unexpected error occurred. Please try again later.',
-        });
+        
+        if (statusCode >= 500) {
+            return res.status(statusCode).json({
+                message: 'Something went wrong, please try again later.',
+            });
+        } else {
+            return res.status(statusCode).json({
+                message: err.message,
+            });
+        }
     } else {
         res.status(statusCode).json({
             message: err.message,
