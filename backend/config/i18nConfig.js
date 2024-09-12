@@ -3,7 +3,6 @@ import i18nextMiddleware from 'i18next-http-middleware';
 import Backend from 'i18next-fs-backend';
 import path from 'path';
 
-// Use the correct path to your locales directory
 const localesPath = path.resolve('backend/locales/{{lng}}/{{ns}}.json');
 
 i18next

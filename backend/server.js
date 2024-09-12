@@ -10,6 +10,8 @@ import borrowRouter from './routes/borrowingRouter.js';
 import libraryRouter from './routes/libraryRoter.js';
 import i18next from './config/i18nConfig.js';
 import i18nextMiddleware from 'i18next-http-middleware';
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocs from './config/swaggerConfig.js';
 
 dotenv.config();
 
@@ -28,6 +30,9 @@ app.use(morgan('tiny')); // Logging requests
 
 // Use i18next middleware in Express
 app.use(i18nextMiddleware.handle(i18next));
+
+// Serve Swagger documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Routes
 app.use('/api/users', userRouter);
