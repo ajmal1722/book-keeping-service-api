@@ -45,73 +45,97 @@
  *         description: Internal server error.
  */
 
+
 /**
  * @swagger
- * /api/books/{id}:
- *   get:
- *     summary: Retrieve a book by ID
- *     description: Retrieve details of a specific book including its author, library, and borrower information.
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: The ID of the book
+ * /api/books:
+ *   post:
+ *     summary: Create a new book entry
+ *     tags: [Books]
+ *     requestBody:
+ *       description: Details of the book to be created
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 description: Title of the book
+ *                 example: "The Great Gatsby"
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: Image of the book
  *     responses:
- *       200:
- *         description: A single book object
+ *       201:
+ *         description: Book created successfully
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Book created successfully"
  *                 book:
  *                   type: object
  *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: "60d9f6f1a8f5e53b1c9f1a1d"
  *                     title:
  *                       type: string
- *                     coverImage:
+ *                       example: "The Great Gatsby"
+ *                     author:
  *                       type: string
- *                     isAvailable:
- *                       type: boolean
+ *                       example: "F. Scott Fitzgerald"
+ *                     imageUrl:
+ *                       type: string
+ *                       example: "https://storage.googleapis.com/bucket-name/book-images/1627994915123_image.jpg"
  *                     createdAt:
  *                       type: string
  *                       format: date-time
- *                     author_details:
- *                       type: object
- *                       properties:
- *                         _id:
- *                           type: string
- *                         name:
- *                           type: string
- *                         email:
- *                           type: string
- *                     library_details:
- *                       type: array
- *                       items:
- *                         type: object
- *                         properties:
- *                           _id:
- *                             type: string
- *                           name:
- *                             type: string
- *                           inventory:
- *                             type: object
- *                             properties:
- *                               isAvailable:
- *                                 type: boolean
- *                               borrower_details:
- *                                 type: object
- *                                 properties:
- *                                   _id:
- *                                     type: string
- *                                   name:
- *                                     type: string
- *                                   email:
- *                                     type: string
+ *                       example: "2023-09-12T12:34:56.789Z"
  *       400:
- *         description: Bad Request - Book ID required
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Title is required"
  *       404:
- *         description: Book not found
+ *         description: Not Found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Author not found"
+ *       409:
+ *         description: Conflict
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Book already exists"
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Image upload failed"
  */
