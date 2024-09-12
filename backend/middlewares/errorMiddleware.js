@@ -12,7 +12,7 @@ const errorHandler = (err, req, res, next) => {
             });
         } else {
             // Translate the error message if it's a key
-            const errorMessage = req.t ? req.t(err.message) : 'error occured';
+            const errorMessage = req.t ? req.t(err.message) : err.message;
 
             return res.status(statusCode).json({
                 message: errorMessage,
