@@ -7,10 +7,7 @@
     }
   ],
   "routes": [
-    {
-      "src": "/api-docs",
-      "dest": "backend/server.js"
-    },
+    { "src": "/swagger-docs.html", "dest": "backend/public/swagger-docs.html" },
     {
       "src": "/(.*)",
       "dest": "backend/server.js"
