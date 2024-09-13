@@ -1,0 +1,431 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Book Keeping Service API Documentation",
+    "version": "1.0.0",
+    "description": "API documentation for the Book Management Service"
+  },
+  "servers": [
+    {
+      "url": "https://book-keeping-service-api.vercel.app/"
+    }
+  ],
+  "paths": {
+    "/api/books": {
+      "get": {
+        "summary": "Retrieve a list of all books",
+        "description": "Get a list of all books with details such as title, author, and image URL.",
+        "tags": [
+          "Books"
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of books.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "books": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "615a8ef8f0b5b122f8f3b581"
+                          },
+                          "title": {
+                            "type": "string",
+                            "example": "The Great Gatsby"
+                          },
+                          "author": {
+                            "type": "object",
+                            "properties": {
+                              "_id": {
+                                "type": "string",
+                                "example": "615a8e8bf0b5b122f8f3b581"
+                              },
+                              "name": {
+                                "type": "string",
+                                "example": "John Doe"
+                              }
+                            }
+                          },
+                          "imageUrl": {
+                            "type": "string",
+                            "example": "https://example.com/image.jpg"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2023-09-12T14:48:00.000Z"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new book entry",
+        "tags": [
+          "Books"
+        ],
+        "requestBody": {
+          "description": "Details of the book to be created",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Title of the book",
+                    "example": "The Great Gatsby"
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Image of the book"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Book created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Book created successfully"
+                    },
+                    "book": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "60d9f6f1a8f5e53b1c9f1a1d"
+                        },
+                        "title": {
+                          "type": "string",
+                          "example": "The Great Gatsby"
+                        },
+                        "author": {
+                          "type": "string",
+                          "example": "F. Scott Fitzgerald"
+                        },
+                        "imageUrl": {
+                          "type": "string",
+                          "example": "https://storage.googleapis.com/bucket-name/book-images/1627994915123_image.jpg"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2023-09-12T12:34:56.789Z"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Title is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Author not found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Book already exists"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Image upload failed"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Book": {
+        "type": "object",
+        "required": [
+          "title",
+          "author"
+        ],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "The auto-generated id of the book.",
+            "example": "615a8ef8f0b5b122f8f3b581"
+          },
+          "title": {
+            "type": "string",
+            "description": "The title of the book.",
+            "example": "The Great Gatsby"
+          },
+          "author": {
+            "type": "string",
+            "description": "The ID of the author (reference to User schema).",
+            "example": "615a8e8bf0b5b122f8f3b581"
+          },
+          "imageUrl": {
+            "type": "string",
+            "description": "The URL of the book's cover image.",
+            "example": "https://example.com/image.jpg"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The date when the book was created.",
+            "example": "2023-09-12T14:48:00.000Z"
+          }
+        },
+        "example": {
+          "title": "The Great Gatsby",
+          "author": "615a8e8bf0b5b122f8f3b581",
+          "imageUrl": "https://example.com/image.jpg"
+        }
+      },
+      "Library": {
+        "type": "object",
+        "required": [
+          "name",
+          "owner"
+        ],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "The auto-generated id of the library.",
+            "example": "615a8ef8f0b5b122f8f3b582"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the library.",
+            "example": "Central Library"
+          },
+          "owner": {
+            "type": "string",
+            "description": "The ID of the library owner (reference to User schema).",
+            "example": "615a8e8bf0b5b122f8f3b583"
+          },
+          "inventory": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "bookId": {
+                  "type": "string",
+                  "description": "The ID of the book in the inventory.",
+                  "example": "615a8ef8f0b5b122f8f3b581"
+                },
+                "borrower": {
+                  "type": "string",
+                  "description": "The ID of the borrower (reference to User schema).",
+                  "example": "615a8e8bf0b5b122f8f3b584"
+                },
+                "borrowedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "The date when the book was borrowed.",
+                  "example": "2023-09-12T14:48:00.000Z"
+                },
+                "isAvailable": {
+                  "type": "boolean",
+                  "description": "Availability status of the book.",
+                  "example": false
+                },
+                "charge": {
+                  "type": "number",
+                  "description": "The charge associated with borrowing the book.",
+                  "example": 5
+                }
+              }
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The date when the library was created.",
+            "example": "2023-09-12T14:48:00.000Z"
+          }
+        },
+        "example": {
+          "name": "Central Library",
+          "owner": "615a8e8bf0b5b122f8f3b583",
+          "inventory": [
+            {
+              "bookId": "615a8ef8f0b5b122f8f3b581",
+              "borrower": "615a8e8bf0b5b122f8f3b584",
+              "borrowedAt": "2023-09-12T14:48:00.000Z",
+              "isAvailable": false,
+              "charge": 5
+            }
+          ]
+        }
+      },
+      "User": {
+        "type": "object",
+        "required": [
+          "name",
+          "email",
+          "password"
+        ],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "The auto-generated id of the user.",
+            "example": "615a8ef8f0b5b122f8f3b584"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the user.",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "description": "The email of the user.",
+            "example": "johndoe@example.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "The hashed password of the user.",
+            "example": "hashedpassword123"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "author",
+                "borrower",
+                "library"
+              ]
+            },
+            "description": "The roles assigned to the user.",
+            "example": [
+              "author",
+              "borrower"
+            ]
+          },
+          "booksWritten": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "The IDs of books written by the user.",
+              "example": "615a8ef8f0b5b122f8f3b581"
+            }
+          },
+          "borrowedBooks": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "The IDs of books borrowed by the user.",
+              "example": "615a8ef8f0b5b122f8f3b582"
+            }
+          },
+          "librariesOwned": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "The IDs of libraries owned by the user.",
+              "example": "615a8ef8f0b5b122f8f3b583"
+            }
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "Refresh token for authentication.",
+            "example": "someRefreshToken123"
+          }
+        },
+        "example": {
+          "name": "John Doe",
+          "email": "johndoe@example.com",
+          "password": "hashedpassword123",
+          "roles": [
+            "author",
+            "borrower"
+          ],
+          "booksWritten": [
+            "615a8ef8f0b5b122f8f3b581"
+          ],
+          "borrowedBooks": [
+            "615a8ef8f0b5b122f8f3b582"
+          ],
+          "librariesOwned": [
+            "615a8ef8f0b5b122f8f3b583"
+          ]
+        }
+      }
+    }
+  },
+  "tags": []
+}

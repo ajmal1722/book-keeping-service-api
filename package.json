@@ -6,7 +6,9 @@
   "main": "server.js",
   "scripts": {
     "start": "node backend/server.js",
-    "server": "nodemon backend/server.js"
+    "server": "nodemon backend/server.js",
+    "generate:swagger-json": "node backend/scripts/generateSwaggerJson.js",
+    "generate:swagger-html": "swagger-cli bundle backend/public/swagger.json -o backend/public/swagger-docs.html -t html"
   },
   "author": "Muhammed Ajmal",
   "license": "ISC",
@@ -24,6 +26,10 @@
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-dist": "^5.17.14",
     "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "swagger-cli": "^4.0.4"
   }
 }
