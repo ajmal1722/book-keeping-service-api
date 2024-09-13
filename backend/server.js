@@ -1,4 +1,6 @@
 import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
@@ -14,6 +16,8 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerDocs from './config/swaggerConfig.js';
 
 dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const port = process.env.PORT || 5000;
 const app = express();
@@ -33,6 +37,9 @@ app.use(i18nextMiddleware.handle(i18next));
 
 // Serve Swagger documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+// Serve static files from the public directory
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
 app.use('/api/users', userRouter);
