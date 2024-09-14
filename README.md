@@ -2,21 +2,21 @@
 
 ## Overview
 
-The Bookkeeping Service API provides a system to manage Books, Users (Authors and Borrowers), and Libraries. It enables users to register, authenticate, borrow books, and manage library inventories. The API supports multilingual responses (English and Hindi) and includes authorization checks to ensure secure access to resources.
+The Bookkeeping Service API provides a system to manage Books, Authors and libraries. User can have upto 3 roles which includes authors, borrower and library owner. It enables users to register, authenticate, borrow books, and manage library inventories. The API supports multilingual responses (English and Hindi) and includes authorization checks to ensure secure access to resources.
 
 ## Features
 
-- **Books Management:** Create, retrieve, update, and delete books.
-- **Users Management:** Register and authenticate users (Authors and Borrowers).
-- **Library Management:** Manage libraries and their inventories.
+- **Books Management:** Create, retrieve, update, and delete books. Only the author of the book can update and delete the Book.
+- **Users Management:** Register and authenticate users and add roles based on their activity.
+- **Library Management:** Manage libraries and their inventories. Only the library owner can Update and delete library and library inventory
 - **Borrowing and Returning:** Borrow and return books, with charges.
-- **Multilingual Support:** API responses in English and Hindi.
+- **Multilingual Support:** API responses in English and Hindi based on user preferance.
 - **Authorization:** Role-based access control with JWT authentication.
 
 ## Project Structure
 
 - **Books:** A book is associated with an author (User) and can be borrowed by another user. Each book is owned by a library.
-- **Users:** Can be either Authors (who write books) or Borrowers (who borrow books).
+- **Users:** Can be either Authors (who write books) or Borrowers (who borrow books) or the library owner (who owns library).
 - **Libraries:** Stores information about books and their availability for borrowing.
 
 ## API Endpoints
@@ -31,7 +31,7 @@ The Bookkeeping Service API provides a system to manage Books, Users (Authors an
 
 ### Users
 
-- **POST /api/users/register**: Register a new user (both authors and borrowers).
+- **POST /api/users/register**: Register a new user (both authors, borrowers and library owner).
 - **POST /api/users/login**: Authenticate a user and generate  JWT access and refresh token.
 
 ### Borrowing
