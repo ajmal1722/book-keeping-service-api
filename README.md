@@ -68,3 +68,35 @@ The Bookkeeping Service API provides a system to manage Books, Authors and libra
    ```bash
    git clone https://github.com/ajmal1722/book-keeping-service-api
    cd bookkeeping-service-api
+
+2. **Install dependencies:**
+
+   ```bash
+   npm install
+
+3. **Set up environment variables:**
+
+   ```bash
+   NODE_ENV=production
+   PORT=8000
+   MONGO_URI=<Your MongoDB URI>
+   JWT_ACCESS_SECRET=<Your JWT access secret>
+   JWT_REFRESH_SECRET=<Your JWT refresh secret>
+   FIREBASE_API_KEY=<Your Firebase API key>
+   FIREBASE_STORAGE_BUCKET=<Your Firebase storage bucket>
+   FIREBASE_TYPE=service_account
+   FIREBASE_PROJECT_ID=<Your Firebase project ID>
+   FIREBASE_PRIVATE_KEY_ID=<Your Firebase private key ID>
+   FIREBASE_PRIVATE_KEY=<Your Firebase private key>
+   FIREBASE_CLIENT_EMAIL=<Your Firebase client email>
+   FIREBASE_CLIENT_ID=<Your Firebase client ID>
+   FIREBASE_AUTH_URI=<Your Firebase auth URI>
+   FIREBASE_TOKEN_URI=<Your Firebase token URI>
+   FIREBASE_AUTH_PROVIDER_X509_CERT_URL=<Your Firebase auth provider CERT URL>
+   FIREBASE_CLIENT_X509_CERT_URL=<Your Firebase client X509 certificate URL>
+   FIREBASE_UNIVERSE_DOMAIN=<Your Firebase universe domanin>
+
+4. **Run the application:**
+
+   ```bash
+   npm run server
