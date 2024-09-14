@@ -100,3 +100,7 @@ The Bookkeeping Service API provides a system to manage Books, Authors and libra
 
    ```bash
    npm run server
+
+## API Documentation
+
+https://app.swaggerhub.com/apis-docs/AJUAJMAL1722001/book-keeping-service-api-docs/1.0.0#/
