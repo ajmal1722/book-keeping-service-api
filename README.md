@@ -103,4 +103,4 @@ The Bookkeeping Service API provides a system to manage Books, Authors and libra
 
 ## API Documentation
 
-[API end poinst documentation](<https://app.swaggerhub.com/apis-docs/AJUAJMAL1722001/book-keeping-service-api-docs/1.0.0#/>)
+[API end point documentation](<https://app.swaggerhub.com/apis-docs/AJUAJMAL1722001/book-keeping-service-api-docs/1.0.0#/>)
