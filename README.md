@@ -6,7 +6,7 @@ The Bookkeeping Service API provides a system to manage Books, Authors and libra
 
 ### Multilingual Demo
 
-Watch the video demo of the Multilingual here:
+Watch the video demo of the Multilingual responses here:
 
 [![Watch the video](https://res.cloudinary.com/dlrkot6qa/image/upload/v1726371111/bgq1mxuqfn2ozarq9mtv.png)](https://res.cloudinary.com/dlrkot6qa/video/upload/v1726370552/n3ftrhzwft7binygx3x6.mp4)
 
