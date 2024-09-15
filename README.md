@@ -4,6 +4,12 @@
 
 The Bookkeeping Service API provides a system to manage Books, Authors and libraries. User can have upto 3 roles which includes authors, borrower and library owner. It enables users to register, authenticate, borrow books, and manage library inventories. The API supports multilingual responses (English and Hindi) and includes authorization checks to ensure secure access to resources.
 
+### Multilingual Demo
+
+Watch the video demo of the Multilingual here:
+
+[![Watch the video](https://res.cloudinary.com/dlrkot6qa/image/upload/v1726371111/bgq1mxuqfn2ozarq9mtv.png)](https://res.cloudinary.com/dlrkot6qa/video/upload/v1726370552/n3ftrhzwft7binygx3x6.mp4)
+
 ## Features
 
 - **Books Management:** Create, retrieve, update, and delete books. Only the author of the book can update and delete the Book.

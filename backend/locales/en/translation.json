@@ -42,5 +42,6 @@
     "USER_CREATED_SUCCESSFULLY": "User is created",
     "EMAIL_PASSWORD_REQUIRED": "Email and password are required",
     "INCORRECT_PASSWORD": "Incorrect password",
-    "LOGIN_SUCCESSFUL": "Login successful"
+    "LOGIN_SUCCESSFUL": "Login successful",
+    "LIBRARY_BOOK_ID_REQUIRED": "Library Id and book Id is required"
 }
